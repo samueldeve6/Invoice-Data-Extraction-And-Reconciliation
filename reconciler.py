@@ -9,179 +9,211 @@ import pandas as pd
 import numpy as np
 
 def reconcile(pdf_df, excel_df):
-    pdf = pdf_df.copy()
-    excel = excel_df.copy()
-
-    # asegurar columnas existan
-    if "nit_normalized" not in pdf.columns:
-        pdf["nit_normalized"] = pdf.get("nit_proveedor").fillna("").astype(str).str.replace(r"[^\d]", "", regex=True)
-    if "nit_normalized" not in excel.columns:
-        excel["nit_normalized"] = excel.get("NIT").astype(str).apply(lambda x: "" if pd.isna(x) else str(x).upper().replace("CO","").replace(" ",""))
-
-    # identificar invoice column en excel (Invoice ID preferido)
-    invoice_col = None
-    for c in excel.columns:
-        if "INVOICE ID" in str(c).upper() or str(c).upper() == "INVOICE":
-            invoice_col = c
-            break
-    if invoice_col is None:
-        # fallback: tomar primera columna que contenga 'INVOICE' o 'INVOICE ID'
-        for c in excel.columns:
-            if "INVOICE" in str(c).upper():
-                invoice_col = c
-                break
-
-    # normalizaciones simples
-    if "numero_factura" in pdf.columns:
-        pdf["numero_factura"] = pdf["numero_factura"].fillna("").astype(str).str.strip()
-    else:
-        pdf["numero_factura"] = ""
-
-    if invoice_col:
-        excel[invoice_col] = excel[invoice_col].fillna("").astype(str).str.strip()
-    else:
-        excel["Invoice ID"] = excel.get("Invoice ID", "").astype(str).fillna("")
-
-    excel_col_for_merge = invoice_col if invoice_col else "Invoice ID"
-
-    pdf["invoice_id_normalized"] = (
-        pdf["invoice_id_normalized"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
-    )
-
-    excel["invoice_id_normalized"] = (
-        excel["invoice_id_normalized"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
-    )
-
+    """
+    Realiza conciliación completa entre PDFs y AP Listing
+    Retorna: (merged_df, resultados_conciliacion)
+    """
+    # Normalizar NITs para el cruce
+    pdf_df['nit_normalized'] = pdf_df['nit_proveedor'].str.replace(r'[^0-9]', '', regex=True)
+    excel_df['nit_normalized'] = excel_df['NIT'].str.replace(r'[^0-9]', '', regex=True)
     
-    def clean_nit(nit):
-        nit = str(nit)
-        nit = "".join(c for c in nit if c.isdigit())
-        if len(nit) > 9:
-            nit = nit[:9]  # quitar dígito verificación
-        return nit
-
-    pdf["nit_normalized"] = pdf["nit_normalized"].apply(clean_nit)
-    excel["nit_normalized"] = excel["nit_normalized"].apply(clean_nit)
-
-    print("PDF invoice_id_normalized dtype:", pdf["invoice_id_normalized"].dtype)
-    print("Excel invoice_id_normalized dtype:", excel["invoice_id_normalized"].dtype)
-
-    print("PDF NIT únicos:")
-    print(pdf["nit_normalized"].unique()[:10])
-
-    print("Excel NIT únicos:")
-    print(excel["nit_normalized"].unique()[:10])
-
-    # ---- 1) merge exacto por nit + invoice normalizado ----
-    merged = pd.merge(
-        pdf,
-        excel,
-        on="invoice_id_normalized",
-        how="outer",
-        indicator=True,
-        suffixes=("_pdf", "_excel")
+    # Normalizar nombres de proveedores para comparación
+    pdf_df['supplier_normalized'] = pdf_df['nombre_proveedor'].str.upper().str.replace(r'[^A-Z0-9ÁÉÍÓÚÑ\s]', '', regex=True).str.strip()
+    excel_df['supplier_normalized'] = excel_df['Supplier/Beneficiary Name'].str.upper().str.replace(r'[^A-Z0-9ÁÉÍÓÚÑ\s]', '', regex=True).str.strip()
+    
+    # Normalizar montos a numérico
+    for col in ['subtotal', 'iva_monto', 'total']:
+        if col in pdf_df.columns:
+            pdf_df[col] = pd.to_numeric(pdf_df[col], errors='coerce')
+    
+    for col in ['Subtotal', 'VAT/WHT1', 'Amount Total']:
+        if col in excel_df.columns:
+            excel_df[col] = pd.to_numeric(excel_df[col], errors='coerce')
+    
+    print(f"DEBUG - PDF NIT únicos: {pdf_df['nit_normalized'].unique()}")
+    print(f"DEBUG - Excel NIT únicos: {excel_df['nit_normalized'].unique()}")
+    
+    # --- ANÁLISIS DE COINCIDENCIAS ---
+    resultados = []
+    
+    # 1. Encontrar proveedores que están en ambas fuentes (MATCH)
+    nits_comunes = set(pdf_df['nit_normalized'].dropna()) & set(excel_df['nit_normalized'].dropna())
+    print(f"DEBUG - NITS comunes: {len(nits_comunes)}")
+    
+    # 2. Proveedores solo en PDF
+    nits_solo_pdf = set(pdf_df['nit_normalized'].dropna()) - set(excel_df['nit_normalized'].dropna())
+    
+    # 3. Proveedores solo en Excel
+    nits_solo_excel = set(excel_df['nit_normalized'].dropna()) - set(pdf_df['nit_normalized'].dropna())
+    
+    print(f"DEBUG - Resumen: {len(nits_comunes)} match, {len(nits_solo_pdf)} solo PDF, {len(nits_solo_excel)} solo Excel")
+    
+    # --- PROCESAR PROVEEDORES CON COINCIDENCIA ---
+    for nit in nits_comunes:
+        pdf_proveedor = pdf_df[pdf_df['nit_normalized'] == nit]
+        excel_proveedor = excel_df[excel_df['nit_normalized'] == nit]
+        
+        # Comparar nombres
+        pdf_nombre = pdf_proveedor['supplier_normalized'].iloc[0] if not pdf_proveedor.empty else ''
+        excel_nombre = excel_proveedor['supplier_normalized'].iloc[0] if not excel_proveedor.empty else ''
+        
+        nombre_coincide = pdf_nombre == excel_nombre
+        
+        # Comparar facturas
+        pdf_facturas = set(pdf_proveedor['invoice_id_normalized'].dropna())
+        excel_facturas = set(excel_proveedor['Invoice ID'].dropna())
+        facturas_comunes = pdf_facturas & excel_facturas
+        
+        # Comparar montos totales
+        total_pdf = pdf_proveedor['total'].sum() if 'total' in pdf_proveedor.columns else 0
+        total_excel = excel_proveedor['Amount Total'].sum() if 'Amount Total' in excel_proveedor.columns else 0
+        
+        diferencia_abs = abs(total_pdf - total_excel)
+        diferencia_pct = (diferencia_abs / max(total_pdf, total_excel, 1)) * 100
+        
+        # Clasificar coincidencia
+        if nombre_coincide and len(facturas_comunes) > 0 and diferencia_pct < 5:
+            estado = "COINCIDEN"
+        elif nombre_coincide or len(facturas_comunes) > 0:
+            estado = "DIFIEREN"
+        else:
+            estado = "DIFIEREN"
+        
+        # Detalles de diferencias
+        diferencias = []
+        if not nombre_coincide:
+            diferencias.append(f"Nombres: PDF='{pdf_proveedor['nombre_proveedor'].iloc[0]}' vs Excel='{excel_proveedor['Supplier/Beneficiary Name'].iloc[0]}'")
+        
+        if len(facturas_comunes) == 0:
+            diferencias.append(f"Sin facturas coincidentes: PDF={len(pdf_facturas)} vs Excel={len(excel_facturas)}")
+        
+        if diferencia_pct > 5:
+            diferencias.append(f"Montos: PDF=${total_pdf:,.2f} vs Excel=${total_excel:,.2f} (diferencia {diferencia_pct:.1f}%)")
+        
+        resultado = {
+            "nit": nit,
+            "nombre_proveedor": pdf_proveedor['nombre_proveedor'].iloc[0] if not pdf_proveedor.empty else excel_proveedor['Supplier/Beneficiary Name'].iloc[0],
+            "estado": estado,
+            "nombre_coincide": nombre_coincide,
+            "facturas_pdf": len(pdf_facturas),
+            "facturas_excel": len(excel_facturas),
+            "facturas_comunes": len(facturas_comunes),
+            "total_pdf": total_pdf,
+            "total_excel": total_excel,
+            "diferencia_absoluta": diferencia_abs,
+            "diferencia_porcentual": diferencia_pct,
+            "diferencias": diferencias,
+            "facturas_pdf_detalle": pdf_proveedor.to_dict('records') if not pdf_proveedor.empty else [],
+            "facturas_excel_detalle": excel_proveedor.to_dict('records') if not excel_proveedor.empty else []
+        }
+        
+        resultados.append(resultado)
+    
+    # --- PROVEEDORES SOLO EN PDF ---
+    for nit in nits_solo_pdf:
+        pdf_proveedor = pdf_df[pdf_df['nit_normalized'] == nit]
+        
+        resultado = {
+            "nit": nit,
+            "nombre_proveedor": pdf_proveedor['nombre_proveedor'].iloc[0],
+            "estado": "SOLO_PDF",
+            "nombre_coincide": False,
+            "facturas_pdf": len(pdf_proveedor),
+            "facturas_excel": 0,
+            "facturas_comunes": 0,
+            "total_pdf": pdf_proveedor['total'].sum() if 'total' in pdf_proveedor.columns else 0,
+            "total_excel": 0,
+            "diferencia_absoluta": 0,
+            "diferencia_porcentual": 0,
+            "diferencias": ["Proveedor no encontrado en AP Listing"],
+            "facturas_pdf_detalle": pdf_proveedor.to_dict('records'),
+            "facturas_excel_detalle": []
+        }
+        
+        resultados.append(resultado)
+    
+    # --- PROVEEDORES SOLO EN EXCEL ---
+    for nit in nits_solo_excel:
+        excel_proveedor = excel_df[excel_df['nit_normalized'] == nit]
+        
+        resultado = {
+            "nit": nit,
+            "nombre_proveedor": excel_proveedor['Supplier/Beneficiary Name'].iloc[0],
+            "estado": "SOLO_EXCEL",
+            "nombre_coincide": False,
+            "facturas_pdf": 0,
+            "facturas_excel": len(excel_proveedor),
+            "facturas_comunes": 0,
+            "total_pdf": 0,
+            "total_excel": excel_proveedor['Amount Total'].sum() if 'Amount Total' in excel_proveedor.columns else 0,
+            "diferencia_absoluta": 0,
+            "diferencia_porcentual": 0,
+            "diferencias": ["Proveedor no encontrado en facturas PDF"],
+            "facturas_pdf_detalle": [],
+            "facturas_excel_detalle": excel_proveedor.to_dict('records')
+        }
+        
+        resultados.append(resultado)
+    
+    # --- MERGE FINAL PARA EL JSON ---
+    # Guardar las fechas del PDF antes del merge
+    pdf_dates = pdf_df[['invoice_id_normalized', 'fecha_inicio', 'fecha_final']].copy()
+    
+    # Renombrar columnas del Excel para evitar conflictos
+    excel_renamed = excel_df.copy()
+    excel_cols_conflict = ['Request Date', 'Invoice Date', 'Due Date', 'Curr.', 'invoice_date_normalized']
+    for col in excel_cols_conflict:
+        if col in excel_renamed.columns:
+            excel_renamed = excel_renamed.rename(columns={col: f"excel_{col.lower().replace(' ', '_')}"})
+    
+    # Merge principal - especificar suffixes para evitar conflictos
+    merged = pd.merge(pdf_df, excel_renamed, on='nit_normalized', how='outer', suffixes=('_pdf', '_excel'))
+    
+    # Restaurar fechas del PDF - usar la columna correcta después del merge
+    invoice_col = 'invoice_id_normalized_pdf' if 'invoice_id_normalized_pdf' in merged.columns else 'invoice_id_normalized'
+    
+    for _, row in pdf_dates.iterrows():
+        mask = merged[invoice_col] == row['invoice_id_normalized']
+        merged.loc[mask, 'fecha_inicio'] = row['fecha_inicio']
+        merged.loc[mask, 'fecha_final'] = row['fecha_final']
+    
+    # Asegurar que invoice_id_normalized exista (priorizar PDF si existe)
+    if 'invoice_id_normalized_pdf' in merged.columns:
+        merged['invoice_id_normalized'] = merged['invoice_id_normalized_pdf'].fillna(merged.get('invoice_id_normalized_excel', ''))
+    elif 'invoice_id_normalized_excel' in merged.columns:
+        merged['invoice_id_normalized'] = merged['invoice_id_normalized_excel']
+    
+    # Limpiar columnas conflictivas
+    for col in ['fecha_inicio', 'fecha_final']:
+        for suffix in ['_pdf', '_excel', '']:
+            full_col = f"{col}{suffix}"
+            if full_col in merged.columns and full_col != col:
+                merged = merged.drop(full_col, axis=1, errors='ignore')
+    
+    # Renombrar columnas para claridad
+    columnas_renombrar = {
+        'nombre_proveedor': 'nombre_proveedor_pdf',
+        'Supplier/Beneficiary Name': 'nombre_proveedor_excel',
+        'numero_factura': 'numero_factura_pdf', 
+        'Invoice ID': 'numero_factura_excel',
+        'total': 'total_pdf',
+        'Amount Total': 'total_excel',
+        'subtotal': 'subtotal_pdf',
+        'Subtotal': 'subtotal_excel',
+        'moneda': 'moneda_pdf',
+        'Curr.': 'moneda_excel'
+    }
+    
+    for old_col, new_col in columnas_renombrar.items():
+        if old_col in merged.columns:
+            merged = merged.rename(columns={old_col: new_col})
+    
+    # Añadir información de conciliación al merged
+    merged['estado_conciliacion'] = merged['nit_normalized'].map(
+        {r['nit']: r['estado'] for r in resultados}
     )
-
-    merged["nit_coincide"] = (
-        merged["nit_normalized_pdf"] == merged["nit_normalized_excel"]
-    )
-
-    merged["nit_coincide"] = merged["nit_coincide"].fillna(False)
-
-
-    print("PDF invoices únicos:")
-    print(pdf["invoice_id_normalized"].unique()[:10])
-
-    print("Excel invoices únicos:")
-    print(excel["invoice_id_normalized"].unique()[:10])
-
-
-
-    # clasificacion básica
-    merged["clasificacion"] = merged["_merge"].map({
-        "both": "match",
-        "left_only": "solo_pdf",
-        "right_only": "solo_excel"
-    }).astype("object")  
-
-    # detectar columna monto en excel
-    excel_total_col = None
-    for c in merged.columns:
-        if "TOTAL A PAGAR" in str(c).upper():
-            excel_total_col = c
-            break
-    if excel_total_col is None:
-        for c in merged.columns:
-            if "AMOUNT TOTAL" in str(c).upper() or "AMOUNT" in str(c).upper():
-                excel_total_col = c
-                break
-    if excel_total_col is None:
-        # fallback: SUBTOTAL
-        excel_total_col = "Subtotal" if "Subtotal" in merged.columns else None
-
-    # asegurar columnas total en df
-    merged["total"] = merged.get("total", 0).fillna(0)
-    if excel_total_col and excel_total_col in merged.columns:
-        merged[excel_total_col] = merged[excel_total_col].fillna(0)
-    else:
-        # crear columna si no existe
-        merged["__excel_total__"] = 0
-        excel_total_col = "__excel_total__"
-
-    # diferencias
-    merged["diferencia_monto"] = merged["total"] - merged[excel_total_col]
-    def safe_pct(row):
-        ex = row[excel_total_col]
-        if ex == 0 or ex is None:
-            return None
-        return (row["diferencia_monto"] / ex) * 100
-    merged["diferencia_porcentual"] = merged.apply(safe_pct, axis=1)
-
-    # estado final
-    def estado(row):
-        if row["clasificacion"] == "solo_pdf":
-            return "Factura solo en PDF"
-        if row["clasificacion"] == "solo_excel":
-            return "Factura solo en Excel"
-        # match: comparar valores aproximados
-        if abs(row["diferencia_monto"]) < 1:
-            return "Coincide"
-        return "Diferencia detectada"
-    merged["estado"] = merged.apply(estado, axis=1)
-
-    # ----- 2) fallback: buscar posibles coincidencias solo por NIT cuando no hubo match ----
-    # construir lista de pdfs y excels sin match y tratar de encontrar coincidencias por NIT
-    left_only = merged[merged["_merge"] == "left_only"]
-    right_only = merged[merged["_merge"] == "right_only"]
-
-    if not left_only.empty and not right_only.empty:
-        # for performance: crear diccionario por nit en excel
-        excel_by_nit = {}
-        for _, r in right_only.iterrows():
-            nit = r.get("nit_normalized")
-            if pd.isna(nit) or nit in (None, ""):
-                continue
-            excel_by_nit.setdefault(str(nit), []).append(r.to_dict())
-
-        # intentar emparejar left_only por nit
-        updates = []
-        for idx, r in left_only.iterrows():
-            nit = r.get("nit_normalized")
-            if pd.isna(nit) or nit in (None, ""):
-                continue
-            candidates = excel_by_nit.get(str(nit))
-            if candidates:
-                # emparejar con el primer candidato (podríamos mejorar con heurística)
-                cand = candidates[0]
-                # mark row: create merged composite by concatenation - simpler devolver marca en columna 'possible_match'
-                merged.at[idx, "possible_match_invoice"] = cand.get(excel_col_for_merge)
-                merged.at[idx, "possible_match_tot_excel"] = cand.get(excel_total_col)
-                merged.at[idx, "clasificacion"] = "possible_match_by_nit"
-
-    return merged
+    
+    print(f"DEBUG - Resultados de conciliación: {len(resultados)} proveedores procesados")
+    print(f"DEBUG - Merge final: {len(merged)} registros")
+    
+    return merged, resultados

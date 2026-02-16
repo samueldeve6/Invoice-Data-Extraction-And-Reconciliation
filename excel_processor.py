@@ -27,19 +27,43 @@ def parse_number(value):
     s = str(value).strip()
     if s == "":
         return 0.0
-    s = s.replace("$", "").replace("COP", "").strip()
+    
+    # Limpiar símbolos de moneda y prefijos
+    s = s.replace("$", "").replace("COP", "").replace("USD", "").strip()
+    
+    # Manejar negativos en paréntesis
     neg = False
-    if s.startswith("(") and s.endswith(")"):
+    if s.startswith("(") and s.endswith(""):
         neg = True
         s = s[1:-1]
+    
+    # Manejar formato colombiano: 1.234.567,89 -> 1234567.89
     if "," in s and "." in s:
         if s.rfind(",") > s.rfind("."):
+            # Hay más puntos que comas, formato colombiano
             s = s.replace(".", "").replace(",", ".")
         else:
+            # Hay más comas que puntos, formato americano
             s = s.replace(",", "")
     else:
+        # Si solo tiene uno de los dos, asumir formato colombiano si tiene puntos
+        if "." in s and "," not in s:
+            # Verificar si es formato colombiano (miles) o decimal
+            parts = s.split(".")
+            if len(parts) > 2:
+                # Múltiples puntos = formato colombiano de miles
+                s = s.replace(".", "")
+            elif len(parts) == 2 and len(parts[1]) == 3:
+                # Tres dígitos después del punto = probablemente miles
+                s = s.replace(".", "")
+            else:
+                # Un solo punto con 1-2 dígitos = decimal
+                pass
         s = s.replace(".", "").replace(",", ".")
+    
+    # Extraer solo números y punto decimal
     s = re.sub(r"[^\d\.]", "", s)
+    
     try:
         num = float(s) if s != "" else 0.0
         return -num if neg else num
@@ -86,6 +110,36 @@ def load_excel(path):
 
     print("Columnas detectadas correctamente:")
     print(df.columns.tolist())
+
+    # Limpieza específica para el formato de Excel compartido
+    # Eliminar filas completamente vacías
+    df = df.dropna(how='all')
+    
+    # Limpiar espacios en blanco en todas las columnas de texto
+    for col in df.select_dtypes(include=['object']).columns:
+        df[col] = df[col].astype(str).str.strip()
+        # Reemplazar valores como '#N/D' con NaN
+        df[col] = df[col].replace(['#N/D', 'nan', 'NaN', ''], None)
+
+    # Detectar y limpiar montos con formato colombiano específico
+    amount_columns = ['Subtotal', 'VAT/WHT1', 'VAT/WHT2', 'VAT/WHT3', 'Amount Total', 
+                     'Base / Subtotal', 'VAT Total', 'WHT Total', 'Total a Pagar']
+    
+    for col in amount_columns:
+        if col in df.columns:
+            print(f"Limpiando columna de monto: {col}")
+            # Aplicar parse_number a cada valor
+            df[col] = df[col].apply(parse_number)
+            # Mostrar algunos valores para verificar
+            print(f"Muestra de {col}: {df[col].head(3).tolist()}")
+
+    # Normalizar fechas
+    date_columns = ['Request Date', 'Invoice Date', 'Due Date']
+    for col in date_columns:
+        if col in df.columns:
+            print(f"Normalizando fechas en columna: {col}")
+            df[col] = df[col].apply(normalize_date)
+            print(f"Muestra de {col}: {df[col].head(3).tolist()}")
 
     # detectar columna NIT
     nit_cols = [c for c in df.columns if "NIT" in c.upper()]

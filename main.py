@@ -34,6 +34,23 @@ def main():
 
     pdf_df = pd.DataFrame(pdf_invoices)
     print(f"Total facturas PDF válidas: {len(pdf_df)} (de {total_files} archivos)")
+    
+    # Forzar tipos de datos para evitar conversión a None
+    pdf_df['moneda'] = pdf_df['moneda'].fillna('COP')
+    pdf_df['fecha_final'] = pdf_df['fecha_final'].fillna('')
+    
+    # Debug para verificar fechas y moneda en el DataFrame
+    print("DEBUG - Muestra de fechas en PDF DataFrame:")
+    # Usar los nuevos nombres definidos en el extractor
+    pdf_df['fecha_final'] = pdf_df['fecha_final'].fillna('')
+    pdf_df['fecha_inicio'] = pdf_df['fecha_inicio'].fillna('') # Agrega esta línea
+    print(f"moneda: {pdf_df['moneda'].head(3).tolist()}")
+    
+    # Debug para verificar tipos de datos en el DataFrame
+    print("DEBUG - Tipos de datos en PDF DataFrame:")
+    print(f"fecha_inicio dtype: {pdf_df['fecha_inicio'].dtype}")
+    print(f"fecha_final dtype: {pdf_df['fecha_final'].dtype}")
+    print(f"moneda dtype: {pdf_df['moneda'].dtype}")
 
     # 2) cargar excel
     excel_path = "YCO01 - AP LISTING 20260104 con nit.xlsx"
@@ -51,14 +68,21 @@ def main():
     print(excel_df.columns)
 
 
-    # 3) reconciliar
-    merged = reconcile(pdf_df, excel_df)
+    # --- 3. RECONCILIACIÓN ---
+    print("\n Iniciando reconciliación...")
+    merged_df, resultados_conciliacion = reconcile(pdf_df, excel_df)
+    
+    # Debug para verificar datos después del reconciliador
+    print("DEBUG - Muestra de datos después de reconciliar:")
+    print(f"fecha_inicio: {merged_df['fecha_inicio'].head(3).tolist()}")
+    print(f"fecha_final: {merged_df['fecha_final'].head(3).tolist()}")
+    print(f"moneda: {merged_df['moneda_pdf'].head(3).tolist() if 'moneda_pdf' in merged_df.columns else 'N/A'}")
 
-    # 4) generar JSON
+    # --- 4. JSON ---
+    print("\n Generando JSON...")
     total_pdf = len(pdf_df)
     total_excel = len(excel_df)
-    os.makedirs("output", exist_ok=True)
-    build_json(merged, "output/conciliacion.json", errores, total_pdf=total_pdf, total_excel=total_excel)
+    build_json(merged_df, "output/conciliacion.json", errores, total_pdf, total_excel, resultados_conciliacion)
 
     print("Proceso finalizado correctamente.")
 
