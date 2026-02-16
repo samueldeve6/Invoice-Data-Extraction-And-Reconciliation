@@ -48,6 +48,20 @@ def reconcile(pdf_df, excel_df):
     
     print(f"DEBUG - Resumen: {len(nits_comunes)} match, {len(nits_solo_pdf)} solo PDF, {len(nits_solo_excel)} solo Excel")
     
+    # --- ANÁLISIS DETALLADO DE NITs PARA DEBUG ---
+    print("\n🔍 ANÁLISIS DETALLADO DE NITs:")
+    print(f"NITs PDF: {sorted(pdf_df['nit_normalized'].unique())}")
+    print(f"NITs Excel: {sorted(excel_df['nit_normalized'].unique())}")
+    print(f"NITs comunes: {sorted(nits_comunes)}")
+    
+    # Analizar NITs similares que podrían coincidir
+    for nit_pdf in sorted(pdf_df['nit_normalized'].unique()):
+        for nit_excel in sorted(excel_df['nit_normalized'].unique()):
+            if nit_pdf and nit_excel:
+                # Si son similares pero no idénticos
+                if nit_pdf[:8] == nit_excel[:8] and nit_pdf != nit_excel:
+                    print(f"⚠️ NITs similares pero diferentes: PDF={nit_pdf} vs Excel={nit_excel}")
+    
     # --- PROCESAR PROVEEDORES CON COINCIDENCIA ---
     for nit in nits_comunes:
         pdf_proveedor = pdf_df[pdf_df['nit_normalized'] == nit]
