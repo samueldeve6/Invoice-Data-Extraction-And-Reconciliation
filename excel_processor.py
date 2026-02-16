@@ -9,6 +9,26 @@ import pandas as pd
 import re
 import numbers
 
+def normalize_po(value):
+    if pd.isna(value) or value is None:
+        return None
+    
+    s = str(value).strip()
+    
+    # 1. Lista de "basura" común detectada en PDF (fragmentos de palabras)
+    garbage_terms = ['NENTES', 'NSABLES', 'SABLES', 'ENTES', 'PONSABLES', 'NENTES']
+    if s.upper() in garbage_terms:
+        return None
+
+    # 2. Si el texto es muy corto o no tiene números, probablemente no es un PO válido
+    # (Ajusta el largo mínimo si tus PO son muy cortos, pero usualmente son > 5)
+    if len(s) < 5 or not any(char.isdigit() for char in s):
+        # Si no tiene números y no empieza por "PO", lo marcamos como None
+        if not s.upper().startswith("PO"):
+            return None
+            
+    return s
+
 def normalize_nit(nit):
     if pd.isna(nit):
         return None
@@ -135,6 +155,16 @@ def load_excel(path):
             df[col] = df[col].apply(parse_number)
             # Mostrar algunos valores para verificar
             print(f"Muestra de {col}: {df[col].head(3).tolist()}")
+
+    # Buscamos columnas que se llamen PO #, Purchase Order, Orden de Compra, etc.
+    po_cols = [c for c in df.columns if any(k in c.upper() for k in ["PO #", "PURCHASE ORDER", "ORDEN DE COMPRA", "PO#"])]
+    if po_cols:
+        po_col = po_cols[0]
+        # Creamos la columna 'orden_compra' normalizada
+        df["orden_compra"] = df[po_col].apply(normalize_po)
+    else:
+        # Si no existe la columna en el Excel, la creamos vacía
+        df["orden_compra"] = None
 
     # Normalizar fechas
     date_columns = ['Request Date', 'Invoice Date', 'Due Date']
