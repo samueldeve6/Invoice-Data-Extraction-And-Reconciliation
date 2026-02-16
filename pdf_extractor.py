@@ -97,6 +97,35 @@ def extract_value(patterns, text, first_only=True):
     return None
 
 
+def extract_best_amount(patterns, text):
+    """Busca *todos* los montos que coincidan con los patrones y retorna el más probable.
+
+    En muchos PDFs aparecen múltiples 'Total' (ej. totales parciales, totales de líneas).
+    Para el campo total a pagar, normalmente el valor correcto es el monto más alto.
+    """
+    candidates = []
+    for p in patterns:
+        try:
+            matches = re.findall(p, text, flags=re.IGNORECASE)
+        except re.error:
+            matches = []
+
+        for m in matches:
+            raw = m if isinstance(m, str) else (m[0] if m else None)
+            if not raw:
+                continue
+            val = parse_number(raw)
+            if val and val > 0:
+                candidates.append((val, raw))
+
+    if not candidates:
+        return None
+
+    # Elegir el monto mayor como heurística principal
+    candidates.sort(key=lambda x: x[0], reverse=True)
+    return candidates[0][1]
+
+
 
 def extract_nit(text):
     if not text:
@@ -333,12 +362,17 @@ def extract_invoice_data(pdf_path):
     # MONTOS (Mantenemos todos)
     subtotal_raw = extract_value([r"Subtotal\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"], text)
     iva_raw = extract_value([r"IVA\s*(?:[:\-]|\s)\s*([\d\.,\(\)]+)", r"VAT\s*(?:[:\-]|\s)\s*([\d\.,\(\)]+)"], text)
-    total_raw = extract_value([
+
+    total_patterns = [
+        r"Total\s+a\s+Pagar\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
         r"Total\s*(?:a\s*Pagar|Factura|General|con\s*IVA)?\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
         r"Valor\s*Total\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
         r"Amount\s*Total\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
         r"Total\s*COP\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"
-    ], text)
+    ]
+
+    # Usar heurística "mejor monto" para evitar capturar totales parciales pequeños
+    total_raw = extract_best_amount(total_patterns, text) or extract_value(total_patterns, text)
 
     subtotal = parse_number(subtotal_raw)
     iva_monto = parse_number(iva_raw)
