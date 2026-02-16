@@ -31,6 +31,9 @@ def normalize_nit(nit):
     s = str(nit).upper()
     s = s.replace("CO", "")
     s = re.sub(r"[^\d]", "", s)   # deja solo dígitos
+    # quitar dígito de verificación si tiene más de 9 dígitos
+    if len(s) > 9:
+        s = s[:9]
     return s if s and s != "0" else None
 
 
@@ -123,6 +126,23 @@ def extract_nit(text):
 
     return cleaned
 
+def extract_digito_verificacion(nit_completo):
+    """
+    Extrae el dígito de verificación de un NIT completo.
+    Si el NIT tiene 10+ dígitos, el último es el DV.
+    Si tiene 9 dígitos, no tiene DV claro.
+    """
+    if not nit_completo:
+        return None
+    
+    nit_str = str(nit_completo)
+    if len(nit_str) >= 10:
+        return nit_str[-1]  # último dígito
+    elif len(nit_str) == 9:
+        return None  # no se puede determinar el DV
+    else:
+        return None
+
 
 
 
@@ -147,28 +167,123 @@ def extract_invoice_data(pdf_path):
         print(f"⚠ PDF SIN TEXTO DETECTADO (posible escaneado): {pdf_path}")
         return None
 
-    # NOMBRE PROVEEDOR (varios patrones)
+    # NOMBRE PROVEEDOR (patrones mejorados y más específicos)
     nombre_proveedor = extract_value([
-        r"Proveedor\s*[:\-]\s*(.+?)(?:\s{2,}|,|$)",
-        r"Raz[oó]n Social\s*[:\-]\s*(.+?)(?:\s{2,}|,|$)",
-        r"Supplier\s*[:\-]\s*(.+?)(?:\s{2,}|,|$)",
-        r"Supplier/Beneficiary Name\s*[:\-]\s*(.+?)(?:\s{2,}|,|$)"
+        r"Proveedor\s*[:\-]?\s*([A-ZÁÉÍÓÚÑ\s&\.]{3,50}?)(?:\s{2,}|NIT|C\.?N\.?U\.?I\.?T\.?|$)",
+        r"Raz[oó]n Social\s*[:\-]?\s*([A-ZÁÉÍÓÚÑ\s&\.]{3,50}?)(?:\s{2,}|NIT|C\.?N\.?U\.?I\.?T\.?|$)",
+        r"Supplier\s*[:\-]?\s*([A-ZÁÉÍÓÚÑ\s&\.]{3,50}?)(?:\s{2,}|NIT|Tax\s*ID|$)",
+        r"Supplier/Beneficiary Name\s*[:\-]?\s*([A-ZÁÉÍÓÚÑ\s&\.]{3,50}?)(?:\s{2,}|NIT|Invoice|$)",
+        # Patrones adicionales para facturas colombianas
+        r"Nombre\s*[:\-]?\s*([A-ZÁÉÍÓÚÑ\s&\.]{3,50}?)(?:\s{2,}|NIT|$)",
+        r"Denominaci[oó]n\s*[:\-]?\s*([A-ZÁÉÍÓÚÑ\s&\.]{3,50}?)(?:\s{2,}|NIT|$)",
+        # Patrones sin etiquetas específicas (buscar antes de NIT) - más restrictivos
+        r"^([A-ZÁÉÍÓÚÑ\s&\.S\.A\.S\.\,]{5,60}?)\s+(?:NIT|C\.?N\.?U\.?I\.?T\.?|Tax\s*ID)\s*[:\-]?\s*\d"
     ], text)
+    
+    # Si no encuentra nada con patrones específicos, usar fallback del nombre de archivo
+    if not nombre_proveedor or len(nombre_proveedor.strip()) > 100:
+        filename = os.path.basename(pdf_path)
+        # Extraer nombre del archivo (después de YCO01_ y antes del último _)
+        parts = filename.replace(".pdf", "").split("_")
+        if len(parts) >= 3:
+            # Unir las partes del medio (evitando el prefijo y el número de factura)
+            nombre_proveedor = " ".join(parts[1:-1]).strip()
+        elif len(parts) == 2:
+            nombre_proveedor = parts[0].replace("YCO01", "").strip()
+    
+    # Limpiar el nombre si es muy largo
+    if nombre_proveedor and len(nombre_proveedor) > 80:
+        nombre_proveedor = nombre_proveedor[:80].strip()
+    
+    # Debug para ver qué se encontró
+    print(f"Nombre proveedor detectado: {nombre_proveedor}")
 
-    # NIT
-    nit = extract_nit(text)
+    # NIT - extraer todos pero seleccionar el más relevante
+    nit_candidates = extract_nit(text)
 
+    # Seleccionar el mejor NIT: el más largo (generalmente el completo con DV)
+    nit = None
+    if nit_candidates:
+        # Priorizar NITs más largos (generalmente más completos)
+        nit = max(nit_candidates, key=len)
+        print(f"NIT seleccionado: {nit} (de {len(nit_candidates)} candidatos: {nit_candidates})")
+        
+        # Extraer dígito de verificación
+        digito_verificacion = extract_digito_verificacion(nit)
+        if digito_verificacion:
+            print(f"Dígito de verificación: {digito_verificacion}")
+    else:
+        digito_verificacion = None
 
     # NUMERO FACTURA desde nombre del archivo
     filename = os.path.basename(pdf_path)
     numero_factura = filename.split("_")[-1].replace(".pdf", "").strip()
 
-    # FECHA EMISION (dd/mm/yyyy or yyyy-mm-dd)
+    # FECHA EMISION (patrones mejorados para formato colombiano)
     fecha_emision = extract_value([
-        r"Fecha\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
+        # Formatos DD/MM/YYYY o DD-MM-YYYY
+        r"Fecha\s*(?:Emisi[oó]n)?\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
         r"Invoice Date\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
-        r"Fecha Emisi[oó]n\s*[:\-]?\s*(\d{4}[\/\-]\d{2}[\/\-]\d{2})"
+        r"Date\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
+        # Formatos YYYY-MM-DD o YYYY/MM/DD
+        r"Fecha\s*(?:Emisi[oó]n)?\s*[:\-]?\s*(\d{4}[\/\-]\d{2}[\/\-]\d{2})",
+        r"Invoice Date\s*[:\-]?\s*(\d{4}[\/\-]\d{2}[\/\-]\d{2})",
+        # Patrones sin etiquetas específicas
+        r"(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
+        r"(\d{4}[\/\-]\d{2}[\/\-]\d{2})",
+        # Patrones con palabras clave en español
+        r"Fecha[:\s]*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
+        r"Fecha[:\s]*(\d{4}[\/\-]\d{2}[\/\-]\d{2})",
+        # Patrones específicos para facturas colombianas
+        r"(\d{2}/\d{2}/\d{4})",
+        r"(\d{2}-\d{2}-\d{4})"
     ], text)
+    
+    # FECHA VENCIMIENTO (patrones mejorados)
+    fecha_vencimiento = extract_value([
+        # Formatos DD/MM/YYYY o DD-MM-YYYY
+        r"Fecha\s*(?:Vencimiento|Vto\.?|Due)\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
+        r"Due Date\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
+        r"Vencimiento\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
+        r"Vto\.?\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
+        # Formatos YYYY-MM-DD o YYYY/MM/DD
+        r"Fecha\s*(?:Vencimiento|Vto\.?|Due)\s*[:\-]?\s*(\d{4}[\/\-]\d{2}[\/\-]\d{2})",
+        r"Due Date\s*[:\-]?\s*(\d{4}[\/\-]\d{2}[\/\-]\d{2})",
+        # Patrones sin etiquetas específicas
+        r"Vencimiento[:\s]*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
+        r"Vencimiento[:\s]*(\d{4}[\/\-]\d{2}[\/\-]\d{2})",
+        # Patrones específicos para facturas colombianas
+        r"Vence[:\s]*(\d{2}[\/\-]\d{2}[\/\-]\d{4})",
+        r"Vence[:\s]*(\d{4}[\/\-]\d{2}[\/\-]\d{2})"
+    ], text)
+    
+    # Normalizar fechas al formato YYYY-MM-DD
+    def normalize_date(date_str):
+        if not date_str:
+            return None
+        
+        try:
+            date_str = date_str.strip()
+            
+            # Si ya está en formato YYYY-MM-DD, devolverla
+            if re.match(r'\d{4}[-/]\d{2}[-/]\d{2}', date_str):
+                return date_str.replace('/', '-')
+            
+            # Si está en formato DD/MM/YYYY o DD-MM-YYYY
+            if re.match(r'\d{2}[-/]\d{2}[-/]\d{4}', date_str):
+                parts = re.split(r'[-/]', date_str)
+                if len(parts) == 3:
+                    return f"{parts[2]}-{parts[1]}-{parts[0]}"
+            
+            return date_str
+        except:
+            return date_str
+    
+    fecha_emision = normalize_date(fecha_emision)
+    fecha_vencimiento = normalize_date(fecha_vencimiento)
+    
+    # Debug para ver qué fechas se encontraron
+    print(f"Fechas detectadas - Emisión: {fecha_emision}, Vencimiento: {fecha_vencimiento}")
 
     # SUBTOTAL / IVA / TOTAL (varios patrones)
     subtotal_raw = extract_value([r"Subtotal\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"], text)
@@ -229,9 +344,9 @@ def extract_invoice_data(pdf_path):
     return {
         "source_file": os.path.basename(pdf_path),
         "nombre_proveedor": nombre_proveedor,
-        "nit_proveedor": nit,
+        "nit_proveedor":  nit[:-1] if nit and len(nit) > 9 else nit,
         "nit_normalized": nit_normalized,
-        "digito_verificacion": None,
+        "digito_verificacion": digito_verificacion,
         "numero_factura": numero_factura,
         "invoice_id_normalized": normalize_invoice_id(numero_factura),
         "fecha_emision": fecha_emision,
