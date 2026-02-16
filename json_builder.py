@@ -4,8 +4,18 @@ Generación de JSON final. Maneja NaN / NaT y calcula métricas.
 """
 import json
 from datetime import datetime
+import math
 import numpy as np
 import pandas as pd
+
+def sanitize_for_json(obj):
+    if isinstance(obj, float) and math.isnan(obj):
+        return None
+    if isinstance(obj, dict):
+        return {k: sanitize_for_json(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [sanitize_for_json(v) for v in obj]
+    return obj
 
 def clean_dataframe_for_json(df):
     # reemplazar NaN por None y convertir timestamps a str
@@ -29,6 +39,12 @@ def clean_dataframe_for_json(df):
 
 def build_json(df, output_path, errores, total_pdf, total_excel, resultados_conciliacion):
     df_clean = clean_dataframe_for_json(df)
+
+    proveedores_pdf = len([r for r in resultados_conciliacion if r.get('estado') != 'SOLO_EXCEL'])
+    proveedores_excel = len([r for r in resultados_conciliacion if r.get('estado') != 'SOLO_PDF'])
+
+    resultados_conciliacion = sanitize_for_json(resultados_conciliacion)
+    errores = sanitize_for_json(errores)
 
     # detectar columna total excel
     excel_total_col = None
@@ -69,8 +85,8 @@ def build_json(df, output_path, errores, total_pdf, total_excel, resultados_conc
             "totales_fuentes": {
                 "facturas_pdf": total_pdf,
                 "facturas_excel": total_excel,
-                "proveedores_pdf": len(df_clean['nit_normalized'].dropna().unique()) if 'nit_normalized' in df_clean.columns else 0,
-                "proveedores_excel": len(df_clean['nit_normalized'].dropna().unique()) if 'nit_normalized' in df_clean.columns else 0
+                "proveedores_pdf": proveedores_pdf,
+                "proveedores_excel": proveedores_excel
             }
         },
         "proveedores": resultados_conciliacion,
@@ -117,7 +133,41 @@ def build_json(df, output_path, errores, total_pdf, total_excel, resultados_conc
             }
         },
         "datos_detallados": {
-            "registros_conciliados": df_clean.to_dict('records')
+            "registros_conciliados": df_clean[
+                [
+                    c for c in [
+                        'source_file',
+                        'nit_normalized',
+                        'nombre_proveedor_pdf',
+                        'numero_factura_pdf',
+                        'invoice_id_normalized',
+                        'fecha_inicio',
+                        'fecha_final',
+                        'moneda_pdf',
+                        'subtotal_pdf',
+                        'iva_porcentaje',
+                        'iva_monto',
+                        'total_pdf',
+                        'orden_compra',
+                        'cufe',
+                        'tipo_factura',
+                        # Campos clave Excel (según prueba)
+                        'nombre_proveedor_excel',  # Supplier/Beneficiary Name
+                        'numero_factura_excel',    # Invoice ID
+                        'NIT',
+                        'excel_invoice_date',      # Invoice Date
+                        'subtotal_excel',          # Subtotal
+                        'VAT/WHT1',                # IVA (si aplica)
+                        'total_excel',
+                        'excel_curr.',
+                        'PO #',
+                        'Spend Category',
+                        'Cost Center',
+                        'Location',
+                        'estado_conciliacion',
+                    ] if c in df_clean.columns
+                ]
+            ].to_dict('records')
         },
         "errores_y_excepciones": {
             "pdfs_procesados": total_pdf,

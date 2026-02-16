@@ -79,6 +79,9 @@ def normalize_invoice_id(value):
     if pd.isna(value):
         return None
     s = str(value).strip().upper()
+    # Si viene como float representado en texto (ej: '59208.0'), convertir a entero
+    if re.fullmatch(r"\d+\.0", s):
+        s = s.split(".", 1)[0]
     s = re.sub(r"\s+", "", s)
     return s
 

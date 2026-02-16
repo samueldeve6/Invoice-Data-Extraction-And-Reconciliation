@@ -8,18 +8,41 @@ Calcula diferencias y clasifica filas.
 import pandas as pd
 import numpy as np
 
+def clean_nit(nit):
+    """Limpiar NIT eliminando caracteres no numéricos y dígito de verificación"""
+    nit = str(nit) if pd.notna(nit) else ''
+    nit = ''.join(c for c in nit if c.isdigit())
+    # Eliminar dígito de verificación si tiene más de 9 dígitos
+    if len(nit) > 9:
+        nit = nit[:9]
+    return nit
+
+def normalize_supplier_name(name):
+    """Normalizar nombre de proveedor para comparación flexible"""
+    if pd.isna(name):
+        return ''
+    name = str(name).upper()
+    # Eliminar solo caracteres especiales, mantener palabras importantes
+    # Solo eliminar sufijos legales comunes
+    suffixes_to_remove = [' LTDA', ' SAS', ' S.A.', ' S.A', ' SA']
+    for suffix in suffixes_to_remove:
+        name = name.replace(suffix, '')
+    # Solo dejar letras, números y espacios
+    name = ''.join(c for c in name if c.isalnum() or c.isspace())
+    return name.strip()
+
 def reconcile(pdf_df, excel_df):
     """
     Realiza conciliación completa entre PDFs y AP Listing
     Retorna: (merged_df, resultados_conciliacion)
     """
-    # Normalizar NITs para el cruce
-    pdf_df['nit_normalized'] = pdf_df['nit_proveedor'].str.replace(r'[^0-9]', '', regex=True)
-    excel_df['nit_normalized'] = excel_df['NIT'].str.replace(r'[^0-9]', '', regex=True)
+    # Normalizar NITs con función mejorada
+    pdf_df['nit_normalized'] = pdf_df['nit_proveedor'].apply(clean_nit)
+    excel_df['nit_normalized'] = excel_df['NIT'].apply(clean_nit)
     
-    # Normalizar nombres de proveedores para comparación
-    pdf_df['supplier_normalized'] = pdf_df['nombre_proveedor'].str.upper().str.replace(r'[^A-Z0-9ÁÉÍÓÚÑ\s]', '', regex=True).str.strip()
-    excel_df['supplier_normalized'] = excel_df['Supplier/Beneficiary Name'].str.upper().str.replace(r'[^A-Z0-9ÁÉÍÓÚÑ\s]', '', regex=True).str.strip()
+    # Normalizar nombres de proveedores con función flexible
+    pdf_df['supplier_normalized'] = pdf_df['nombre_proveedor'].apply(normalize_supplier_name)
+    excel_df['supplier_normalized'] = excel_df['Supplier/Beneficiary Name'].apply(normalize_supplier_name)
     
     # Normalizar montos a numérico
     for col in ['subtotal', 'iva_monto', 'total']:
@@ -73,9 +96,12 @@ def reconcile(pdf_df, excel_df):
         
         nombre_coincide = pdf_nombre == excel_nombre
         
-        # Comparar facturas
+        # Comparar facturas (usar IDs normalizados para evitar fallos por formato: '59208.0', espacios, etc.)
         pdf_facturas = set(pdf_proveedor['invoice_id_normalized'].dropna())
-        excel_facturas = set(excel_proveedor['Invoice ID'].dropna())
+        if 'invoice_id_normalized' in excel_proveedor.columns:
+            excel_facturas = set(excel_proveedor['invoice_id_normalized'].dropna())
+        else:
+            excel_facturas = set(excel_proveedor.get('Invoice ID', pd.Series(dtype=object)).dropna())
         facturas_comunes = pdf_facturas & excel_facturas
         
         # Comparar montos totales
@@ -85,9 +111,12 @@ def reconcile(pdf_df, excel_df):
         diferencia_abs = abs(total_pdf - total_excel)
         diferencia_pct = (diferencia_abs / max(total_pdf, total_excel, 1)) * 100
         
-        # Clasificar coincidencia
-        if nombre_coincide and len(facturas_comunes) > 0 and diferencia_pct < 5:
-            estado = "COINCIDEN"
+        # Clasificar coincidencia con criterios más flexibles
+        if nombre_coincide and (len(facturas_comunes) > 0 or diferencia_pct < 20):
+            if len(facturas_comunes) > 0 and diferencia_pct < 10:
+                estado = "COINCIDEN"
+            else:
+                estado = "DIFIEREN"
         elif nombre_coincide or len(facturas_comunes) > 0:
             estado = "DIFIEREN"
         else:
@@ -180,8 +209,16 @@ def reconcile(pdf_df, excel_df):
         if col in excel_renamed.columns:
             excel_renamed = excel_renamed.rename(columns={col: f"excel_{col.lower().replace(' ', '_')}"})
     
-    # Merge principal - especificar suffixes para evitar conflictos
-    merged = pd.merge(pdf_df, excel_renamed, on='nit_normalized', how='outer', suffixes=('_pdf', '_excel'))
+    # Merge principal - LEFT JOIN por NIT + Invoice ID (evita duplicación masiva)
+    if 'invoice_id_normalized' not in excel_renamed.columns:
+        excel_renamed['invoice_id_normalized'] = None
+    merged = pd.merge(
+        pdf_df,
+        excel_renamed,
+        on=['nit_normalized', 'invoice_id_normalized'],
+        how='left',
+        suffixes=('_pdf', '_excel')
+    )
     
     # Restaurar fechas del PDF - usar la columna correcta después del merge
     invoice_col = 'invoice_id_normalized_pdf' if 'invoice_id_normalized_pdf' in merged.columns else 'invoice_id_normalized'
