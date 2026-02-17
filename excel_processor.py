@@ -221,6 +221,21 @@ def load_excel(path):
     df = df[df["nit_normalized"].notna()]
     if invoice_col:
         df = df[df[invoice_col].notna()]
+
+    # 1. Asegurar que usamos 'Total a Pagar' como el monto principal de comparación
+    if 'Total a Pagar' in df.columns:
+        # Forzamos a que 'Amount Total' sea igual a 'Total a Pagar' 
+        # para que la conciliación no detecte diferencias por retenciones
+        df['Amount Total'] = df['Total a Pagar']
+
+    # 2. Convertir montos a numeric (Mantener los candidatos actuales)
+    numeric_candidates = [c for c in df.columns if any(k in c.upper() for k in ["SUBTOTAL", "TOTAL", "AMOUNT", "BASE / SUBTOTAL"])]
+    for col in numeric_candidates:
+        df[col] = df[col].apply(parse_number)
+
+    # 3. Filtrar filas válidas y limpieza final
+    df = df.dropna(how="all")
+    df = df[df["nit_normalized"].notna()]
     
     # eliminar filas con NIT inválido
     df = df[df["nit_normalized"].notna()]
@@ -231,4 +246,6 @@ def load_excel(path):
 
     df = df.reset_index(drop=True)
     print(f"Total facturas Excel limpias: {len(df)}")
+
+
     return df
