@@ -3,7 +3,6 @@ json_builder.py
 Generación de JSON final. Maneja NaN / NaT y calcula métricas.
 """
 import json
-from datetime import datetime
 import math
 import numpy as np
 import pandas as pd
@@ -46,31 +45,50 @@ def build_json(df, output_path, errores, total_pdf, total_excel, resultados_conc
     resultados_conciliacion = sanitize_for_json(resultados_conciliacion)
     errores = sanitize_for_json(errores)
 
-    # detectar columna total excel
     excel_total_col = None
-    for c in df_clean.columns:
-        if "TOTAL A PAGAR" in str(c).upper():
-            excel_total_col = c
-            break
+    
+    # Prioridad 1: Nuestra columna ya procesada y confiable
+    if "total_excel" in df_clean.columns:
+        excel_total_col = "total_excel"
+    
+    # Prioridad 2: Buscar "Total a Pagar" si la anterior no existe
     if excel_total_col is None:
         for c in df_clean.columns:
-            if "AMOUNT TOTAL" in str(c).upper() or "AMOUNT" in str(c).upper():
+            if "TOTAL A PAGAR" == str(c).upper().strip():
                 excel_total_col = c
                 break
-    if excel_total_col is None:
-        excel_total_col = "Subtotal" if "Subtotal" in df_clean.columns else "total_excel"
     
-    # --- MÉTRICAS GLOBALES ---
+    # Prioridad 3: Subtotal (como último recurso, nunca Amount)
+    if excel_total_col is None:
+        excel_total_col = "Subtotal" if "Subtotal" in df_clean.columns else None
+
+    # Si después de todo sigue siendo None, evitemos el error
+    if excel_total_col is None:
+        excel_total_col = "total_excel" # Forzamos el nombre aunque esté vacío
+    
+    # --- MÉTRICAS GLOBALES (REEMPLAZA DESDE AQUÍ) ---
     total_proveedores_match = len([r for r in resultados_conciliacion if r['estado'] == 'COINCIDEN'])
     total_proveedores_difieren = len([r for r in resultados_conciliacion if r['estado'] == 'DIFIEREN'])
     total_solo_pdf = len([r for r in resultados_conciliacion if r['estado'] == 'SOLO_PDF'])
     total_solo_excel = len([r for r in resultados_conciliacion if r['estado'] == 'SOLO_EXCEL'])
     
-    # Calcular totales monetarios
-    total_monto_pdf = df_clean['total_pdf'].sum() if 'total_pdf' in df_clean.columns else 0
-    total_monto_excel = df_clean[excel_total_col].sum() if excel_total_col in df_clean.columns else 0
+    # 1. Cálculo de totales forzando valores numéricos únicos
+    try:
+        total_monto_pdf = float(df_clean['total_pdf'].sum()) if 'total_pdf' in df_clean.columns else 0.0
+    except:
+        total_monto_pdf = 0.0
+
+    try:
+        total_monto_excel = float(df_clean[excel_total_col].sum()) if excel_total_col in df_clean.columns else 0.0
+    except:
+        total_monto_excel = 0.0
+
+    # 2. Cálculos de diferencias calculados antes del diccionario
+    diff_abs = abs(total_monto_pdf - total_monto_excel)
+    denominador = max(total_monto_pdf, total_monto_excel, 1.0)
+    diff_porc = (diff_abs / denominador) * 100
     
-    # Top 5 discrepancias (mayor diferencia porcentual)
+    # 3. Top 5 discrepancias
     discrepancias_ordenadas = sorted(
         [r for r in resultados_conciliacion if r['diferencia_porcentual'] > 0],
         key=lambda x: x['diferencia_porcentual'],
@@ -108,6 +126,7 @@ def build_json(df, output_path, errores, total_pdf, total_excel, resultados_conc
             "top_5_discrepancias": [
                 {
                     "nit": d["nit"],
+                    "digito_verificacion": d.get("digito_verificacion"),
                     "nombre_proveedor": d["nombre_proveedor"],
                     "diferencia_porcentual": round(d["diferencia_porcentual"], 2),
                     "diferencia_absoluta": round(d["diferencia_absoluta"], 2),
