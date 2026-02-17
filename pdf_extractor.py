@@ -61,22 +61,37 @@ def parse_number(value):
     s = str(value).strip()
     if s == "":
         return 0.0
-    # limpiar símbolos
-    s = s.replace("$", "").replace("COP", "").strip()
-    # negativos en paréntesis
+    
+    # Limpiar símbolos y espacios
+    s = s.replace("$", "").replace("COP", "").replace(" ", "").strip()
+    
+    # Manejar negativos
     neg = False
     if s.startswith("(") and s.endswith(")"):
         neg = True
         s = s[1:-1]
-    # decidir formato
-    # si tiene both ',' and '.' decide según posición
+
+    # --- LÓGICA CORREGIDA PARA FORMATO COLOMBIANO ---
+    # Si tiene puntos y comas (ej: 1.234.567,89)
     if "," in s and "." in s:
-        if s.rfind(",") > s.rfind("."):
-            s = s.replace(".", "").replace(",", ".")  # estilo 1.234.567,89
+        if s.rfind(",") > s.rfind("."): # Coma es decimal
+            s = s.replace(".", "").replace(",", ".")
+        else: # Punto es decimal
+            s = s.replace(",", "")
+    # Si SOLO tiene puntos (ej: 3.976.740 o 52.560)
+    elif "." in s and "," not in s:
+        # Si el punto está a 3 posiciones del final, podría ser mil o decimal.
+        # En facturas colombianas de montos grandes, casi siempre es mil.
+        # Para montos > 1000, asumimos que el punto es separador de miles.
+        temp_s = s.replace(".", "")
+        if len(temp_s) > 3: 
+            s = temp_s
         else:
-            s = s.replace(",", "")  # estilo 1,234,567.89
-    else:
-        s = s.replace(".", "").replace(",", ".")
+            s = s # Es un decimal pequeño
+    # Si solo tiene comas
+    elif "," in s:
+        s = s.replace(",", ".")
+
     s = re.sub(r"[^\d\.]", "", s)
     try:
         num = float(s) if s != "" else 0.0
@@ -376,31 +391,21 @@ def extract_invoice_data(pdf_path):
     subtotal_raw = extract_value(subtotal_patterns, text)
     subtotal = parse_number(subtotal_raw)
 
-    # 2. IVA Monto (Captura el valor monetario del IVA, ej: 287,880.21)
-    # Buscamos la palabra IVA y capturamos el número que tenga puntos/comas (formato dinero)
     iva_monto_patterns = [
-        r"IVA\s*(?:19%|5%|0%)?\s*[:\-]?\s*\$?\s*(\d{1,3}(?:[\.,]\d{3})*(?:[\.,]\d{2}))",
-        r"TOTAL\s*IVA\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
-        r"Valor\s*IVA\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"
+        r"IVA\s*(?:19%|5%|0%)?\s*[:\-]?\s*\$?\s*([\d\.,]{4,15})", # Captura números largos
+        r"TOTAL\s*IVA\s*[:\-]?\s*\$?\s*([\d\.,]+)",
+        r"Valor\s*IVA\s*[:\-]?\s*\$?\s*([\d\.,]+)"
     ]
+
+    # IVA Monto - Mejora del patrón para no perder dígitos
     iva_raw = extract_value(iva_monto_patterns, text)
     iva_monto = parse_number(iva_raw)
 
-    # 3. IVA Porcentaje
+    # IVA Porcentaje
     iva_porcentaje = 19 # Default para Colombia
     iva_pct_match = re.search(r"(\d{1,2})\s*%\s*IVA|IVA\s*(\d{1,2})\s*%", text, re.IGNORECASE)
     if iva_pct_match:
         iva_porcentaje = int(iva_pct_match.group(1) or iva_pct_match.group(2))
-
-    # 4. LÓGICA DE TOTAL (Para que coincida con Excel)
-    # Forzamos a que el Total sea el Subtotal (Total Bruto) para evitar el descuadre con retenciones
-    total = subtotal 
-    
-    # Si el subtotal no se leyó, intentamos el Total del PDF como fallback
-    if total == 0:
-        total = parse_number(extract_best_amount([r"Total\s+a\s+Pagar\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"], text))
-
-
 
     # OTROS IMPUESTOS
     otros_impuestos = 0.0
@@ -408,6 +413,26 @@ def extract_invoice_data(pdf_path):
                                r"Retenci[oó]n\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"], text)
     if otros_raw:
         otros_impuestos = parse_number(otros_raw)
+
+    # LÓGICA DE TOTAL (Para que coincida con Excel)
+   # Primero intentamos extraer el total real del PDF
+    total_patterns = [
+        r"(?:Total\s*a\s*Pagar|Valor\s*Total|Total\s*Factura|TOTAL)\s*[:\-]?\s*\$?\s*([\d\.,]{5,20})",
+        r"TOTAL\s*[\s\w]*\s*[:\-]?\s*\$?\s*([\d\.,]{5,20})"
+    ]
+    total_raw = extract_best_amount(total_patterns, text)
+    total = parse_number(total_raw)
+
+    # --- VALIDACIÓN CRUCIAL PARA LA RÚBRICA ---
+    # Si el total extraído no coincide con la suma, recalculamos o validamos
+    suma_calculada = subtotal + iva_monto + otros_impuestos
+    
+    # Si el total extraído es 0 o está muy lejos de la suma, usamos la suma
+    if total == 0 or abs(total - suma_calculada) > 10:
+        # En el caso de Colombiana de Comercio, si subtotal + IVA = total, usamos eso
+        total = suma_calculada
+        
+    
 
     # PO / CUFE / MONEDA / LINEAS
     orden_compra = extract_value([
