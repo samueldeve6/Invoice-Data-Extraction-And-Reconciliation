@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "fecha_generacion": "2026-02-16T23:47:22.198912",
+    "fecha_generacion": "2026-02-17T00:36:22.687359",
     "herramientas": [
       "Python",
       "pandas",
@@ -16,200 +16,20 @@
   },
   "proveedores": [
     {
-      "nit": "890900943",
-      "nombre_proveedor": "Colombiana de Comercio S.A.",
-      "estado": "DIFIEREN",
-      "nombre_coincide": false,
-      "facturas_pdf": 3,
-      "facturas_excel": 3,
-      "facturas_comunes": 3,
-      "total_pdf": 12294666.0,
-      "total_excel": 12294666.0,
-      "diferencia_absoluta": 0.0,
-      "diferencia_porcentual": 0.0,
-      "diferencias": [
-        "Nombres: PDF='Colombiana de Comercio S.A.' vs Excel='COLOMBIANA DE COMERCIO SA Y/O ALKOSTO SA'"
-      ],
-      "facturas_pdf_detalle": [
-        {
-          "source_file": "YCO01_ Colombiana de Comercio S.A. _X9922531320.pdf",
-          "nombre_proveedor": "Colombiana de Comercio S.A.",
-          "nit_proveedor": "890900943",
-          "nit_normalized": "890900943",
-          "digito_verificacion": "1",
-          "numero_factura": "X9922531320",
-          "invoice_id_normalized": "X9922531320",
-          "fecha_inicio": "2026-01-14",
-          "fecha_final": "2026-01-14",
-          "moneda": "COP",
-          "subtotal": 3260515.0,
-          "iva_porcentaje": 19,
-          "iva_monto": 4948.0,
-          "otros_impuestos": 0.0,
-          "total": 3260515.0,
-          "numero_lineas": null,
-          "orden_compra": null,
-          "cufe": "c5909ad21f6a3615d1fc0d1b8b2700a2bca4503e01cf",
-          "tipo_factura": "electrónica",
-          "supplier_normalized": "COLOMBIANA DE COMERCIO"
-        },
-        {
-          "source_file": "YCO01_ Colombiana de Comercio S.A. _X9922531321.pdf",
-          "nombre_proveedor": "Colombiana de Comercio S.A.",
-          "nit_proveedor": "890900943",
-          "nit_normalized": "890900943",
-          "digito_verificacion": "1",
-          "numero_factura": "X9922531321",
-          "invoice_id_normalized": "X9922531321",
-          "fecha_inicio": "2026-01-14",
-          "fecha_final": "2026-01-14",
-          "moneda": "COP",
-          "subtotal": 3976740.0,
-          "iva_porcentaje": 19,
-          "iva_monto": 5256.0,
-          "otros_impuestos": 0.0,
-          "total": 3976740.0,
-          "numero_lineas": null,
-          "orden_compra": "PO-YCO01-26000017",
-          "cufe": "1fafa4edb8483fcbe8d0484856a291eb29f79463b447",
-          "tipo_factura": "electrónica",
-          "supplier_normalized": "COLOMBIANA DE COMERCIO"
-        },
-        {
-          "source_file": "YCO01_ Colombiana de Comercio S.A. _X9922531322.pdf",
-          "nombre_proveedor": "Colombiana de Comercio S.A.",
-          "nit_proveedor": "890900943",
-          "nit_normalized": "890900943",
-          "digito_verificacion": "1",
-          "numero_factura": "X9922531322",
-          "invoice_id_normalized": "X9922531322",
-          "fecha_inicio": "2026-01-14",
-          "fecha_final": "2026-01-14",
-          "moneda": "COP",
-          "subtotal": 5057411.0,
-          "iva_porcentaje": 19,
-          "iva_monto": 7738.0,
-          "otros_impuestos": 0.0,
-          "total": 5057411.0,
-          "numero_lineas": null,
-          "orden_compra": "PO-YCO01-26000016",
-          "cufe": "c4a048c9e458457bdd319c487aecb8b4d7cd626ea9b6",
-          "tipo_factura": "electrónica",
-          "supplier_normalized": "COLOMBIANA DE COMERCIO"
-        }
-      ],
-      "facturas_excel_detalle": [
-        {
-          "Portfolio": "LCNX",
-          "COA": "YCO01",
-          "Request Date": "2026-01-20",
-          "Invoice Date": "2026-01-14",
-          "Due Date": "2026-02-13",
-          "Supplier/Beneficiary Name": "COLOMBIANA DE COMERCIO SA Y/O ALKOSTO SA",
-          "Invoice ID": "X9922531320",
-          "NIT": "890900943",
-          "Subtotal": 3260515.0,
-          "VAT/WHT1": 49485.0,
-          "Amount Total": 3260515.0,
-          "Curr.": "COP",
-          "Ex. Rate": 4473.36,
-          "In USD": 739.9359765366526,
-          "Category": null,
-          "PO #": "PO-YCO01-25001502",
-          "Spend Category": "Employee Rewards",
-          "Cost Center": "COGS (SITE) Production Agent Direct",
-          "Location": "COL Bogota - Plaza Titan",
-          "MSA": "11128 - Walt Disney Pictures - 980002449",
-          "Line Item Description": "COMPRA PREMIOS DICIEMBRE DISNEY20 TARJETAS VANILLA X $50.000 MAS $6.600 POR ACTIVACION20 TARJETAS VA",
-          "Base / Subtotal": 3260515.0,
-          "VAT Total": 0.0,
-          "WHT Total": 0.0,
-          "Total a Pagar": 3260515.0,
-          "orden_compra": "PO-YCO01-25001502",
-          "nit_normalized": "890900943",
-          "supplier_normalized": "COLOMBIANA DE COMERCIO YO ALKOSTO",
-          "invoice_id_normalized": "X9922531320",
-          "invoice_date_normalized": "2026-01-14"
-        },
-        {
-          "Portfolio": "LCNX",
-          "COA": "YCO01",
-          "Request Date": "2026-01-20",
-          "Invoice Date": "2026-01-14",
-          "Due Date": "2026-02-13",
-          "Supplier/Beneficiary Name": "COLOMBIANA DE COMERCIO SA Y/O ALKOSTO SA",
-          "Invoice ID": "X9922531322",
-          "NIT": "890900943",
-          "Subtotal": 5057411.0,
-          "VAT/WHT1": 77389.0,
-          "Amount Total": 5057411.0,
-          "Curr.": "COP",
-          "Ex. Rate": 4473.36,
-          "In USD": 1147.8620097644725,
-          "Category": null,
-          "PO #": "PO-YCO01-26000016",
-          "Spend Category": "Client Funded Employee Rewards",
-          "Cost Center": "COGS (SITE) Production Agent Direct",
-          "Location": "COL Bogota - Oficinas y terrazas de",
-          "MSA": "11295 - Bridgecrest - 980002674",
-          "Line Item Description": "COMPRA DE 33 TARJETAS VANILLA X $50.000 MAS $6.600 POR ACTIVACION COMPRA DE 30 TARJETAS VANILLA X $1",
-          "Base / Subtotal": 5057411.0,
-          "VAT Total": 0.0,
-          "WHT Total": 0.0,
-          "Total a Pagar": 5057411.0,
-          "orden_compra": "PO-YCO01-26000016",
-          "nit_normalized": "890900943",
-          "supplier_normalized": "COLOMBIANA DE COMERCIO YO ALKOSTO",
-          "invoice_id_normalized": "X9922531322",
-          "invoice_date_normalized": "2026-01-14"
-        },
-        {
-          "Portfolio": "LCNX",
-          "COA": "YCO01",
-          "Request Date": "2026-01-20",
-          "Invoice Date": "2026-01-14",
-          "Due Date": "2026-02-13",
-          "Supplier/Beneficiary Name": "COLOMBIANA DE COMERCIO SA Y/O ALKOSTO SA",
-          "Invoice ID": "X9922531321",
-          "NIT": "890900943",
-          "Subtotal": 3976740.0,
-          "VAT/WHT1": 52560.0,
-          "Amount Total": 3976740.0,
-          "Curr.": "COP",
-          "Ex. Rate": 4473.36,
-          "In USD": 900.7323354257203,
-          "Category": null,
-          "PO #": "PO-YCO01-26000017",
-          "Spend Category": "Client Funded Employee Rewards",
-          "Cost Center": "COGS (SITE) Production Agent Direct",
-          "Location": "COL Bogota - Oficinas y terrazas de",
-          "MSA": "11295 - Bridgecrest - 980002674",
-          "Line Item Description": "COMPRA DE 37 TARJETAS VANILLA X $100.000 MAS $8.900 DE ACTIVACION CLIENT FUNDED",
-          "Base / Subtotal": 3976740.0,
-          "VAT Total": 0.0,
-          "WHT Total": 0.0,
-          "Total a Pagar": 3976740.0,
-          "orden_compra": "PO-YCO01-26000017",
-          "nit_normalized": "890900943",
-          "supplier_normalized": "COLOMBIANA DE COMERCIO YO ALKOSTO",
-          "invoice_id_normalized": "X9922531321",
-          "invoice_date_normalized": "2026-01-14"
-        }
-      ]
-    },
-    {
       "nit": "800199498",
       "nombre_proveedor": "IDENTICO SAS",
-      "estado": "COINCIDEN",
+      "estado": "DIFIEREN",
       "nombre_coincide": true,
       "facturas_pdf": 2,
       "facturas_excel": 2,
       "facturas_comunes": 2,
       "total_pdf": 1413710.0,
-      "total_excel": 1413710.0,
-      "diferencia_absoluta": 0.0,
-      "diferencia_porcentual": 0.0,
-      "diferencias": [],
+      "total_excel": 1682314.9,
+      "diferencia_absoluta": 268604.8999999999,
+      "diferencia_porcentual": 15.966386554621845,
+      "diferencias": [
+        "Montos: PDF=$1,413,710.00 vs Excel=$1,682,314.90 (diferencia 16.0%)"
+      ],
       "facturas_pdf_detalle": [
         {
           "source_file": "YCO01_IDENTICO SAS_FE910334.pdf",
@@ -268,7 +88,7 @@
           "NIT": "800199498",
           "Subtotal": 830234.0,
           "VAT/WHT1": 157744.46,
-          "Amount Total": 830234.0,
+          "Amount Total": 987978.46,
           "Curr.": "COP",
           "Ex. Rate": 4473.36,
           "In USD": 220.85824972727437,
@@ -287,7 +107,8 @@
           "nit_normalized": "800199498",
           "supplier_normalized": "IDENTICO",
           "invoice_id_normalized": "FE910335",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 830234.0
         },
         {
           "Portfolio": "LCNX",
@@ -300,7 +121,7 @@
           "NIT": "800199498",
           "Subtotal": 583476.0,
           "VAT/WHT1": 110860.44,
-          "Amount Total": 583476.0,
+          "Amount Total": 694336.44,
           "Curr.": "COP",
           "Ex. Rate": 4473.36,
           "In USD": 155.2158645850099,
@@ -319,81 +140,8 @@
           "nit_normalized": "800199498",
           "supplier_normalized": "IDENTICO",
           "invoice_id_normalized": "FE910334",
-          "invoice_date_normalized": "2026-01-14"
-        }
-      ]
-    },
-    {
-      "nit": "900552533",
-      "nombre_proveedor": "VLA S.A.S",
-      "estado": "DIFIEREN",
-      "nombre_coincide": false,
-      "facturas_pdf": 1,
-      "facturas_excel": 1,
-      "facturas_comunes": 1,
-      "total_pdf": 1515159.0,
-      "total_excel": 1515159.0,
-      "diferencia_absoluta": 0.0,
-      "diferencia_porcentual": 0.0,
-      "diferencias": [
-        "Nombres: PDF='VLA S.A.S' vs Excel='VLA SAS'"
-      ],
-      "facturas_pdf_detalle": [
-        {
-          "source_file": "YCO01_VLA S.A.S_FE2560.pdf",
-          "nombre_proveedor": "VLA S.A.S",
-          "nit_proveedor": "900552533",
-          "nit_normalized": "900552533",
-          "digito_verificacion": "7",
-          "numero_factura": "FE2560",
-          "invoice_id_normalized": "FE2560",
-          "fecha_inicio": "2026-01-13",
-          "fecha_final": "2026-02-12",
-          "moneda": "COP",
-          "subtotal": 1515159.0,
-          "iva_porcentaje": 19,
-          "iva_monto": 0.0,
-          "otros_impuestos": 0.0,
-          "total": 1515159.0,
-          "numero_lineas": 2.0,
-          "orden_compra": null,
-          "cufe": "9c06da8d2500d2eedf1f0f0742a2653eea8d02a959f7055d2caf2c04f5ca0fa6a7981404a6c8ee2133d6e51dc9815525",
-          "tipo_factura": "electrónica",
-          "supplier_normalized": "VLAS"
-        }
-      ],
-      "facturas_excel_detalle": [
-        {
-          "Portfolio": "LCNX",
-          "COA": "YCO01",
-          "Request Date": "2026-01-20",
-          "Invoice Date": "2026-01-13",
-          "Due Date": "2026-02-12",
-          "Supplier/Beneficiary Name": "VLA SAS",
-          "Invoice ID": "FE2560",
-          "NIT": "900552533",
-          "Subtotal": 1515159.0,
-          "VAT/WHT1": 287880.21,
-          "Amount Total": 1515159.0,
-          "Curr.": "COP",
-          "Ex. Rate": 4473.36,
-          "In USD": 403.06150410429746,
-          "Category": "Description",
-          "PO #": "PO-YCO01-25001469",
-          "Spend Category": "Marketing and Public Relations",
-          "Cost Center": "(GEO) Regional Marketing Delivery-Indirect",
-          "Location": "COL Bogota - Oficinas y terrazas de",
-          "MSA": "23262 - Opexother - LAGEOCSO",
-          "Line Item Description": "This PO is for the additional expenses that we need to cover during the clients end of the year even",
-          "Base / Subtotal": 1515159.0,
-          "VAT Total": 0.0,
-          "WHT Total": 0.0,
-          "Total a Pagar": 1515159.0,
-          "orden_compra": "PO-YCO01-25001469",
-          "nit_normalized": "900552533",
-          "supplier_normalized": "VLA",
-          "invoice_id_normalized": "FE2560",
-          "invoice_date_normalized": "2026-01-13"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 583476.0
         }
       ]
     },
@@ -468,7 +216,8 @@
           "nit_normalized": "860038299",
           "supplier_normalized": "PAN AMERICAN LIFE DE COLOMBIA COMPANIA DE SEGUROS",
           "invoice_id_normalized": "SMSC60824",
-          "invoice_date_normalized": "2026-01-15"
+          "invoice_date_normalized": "2026-01-15",
+          "total_excel": 26852010.0
         }
       ]
     },
@@ -694,7 +443,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037830",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 20160.53
         },
         {
           "Portfolio": null,
@@ -726,7 +476,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037830",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 29372.43
         },
         {
           "Portfolio": null,
@@ -758,7 +509,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037830",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 80554.04
         },
         {
           "Portfolio": null,
@@ -790,7 +542,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037395",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 80553.78
         },
         {
           "Portfolio": null,
@@ -822,7 +575,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037395",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 84274.26
         },
         {
           "Portfolio": null,
@@ -854,7 +608,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037395",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 109641.96
         },
         {
           "Portfolio": null,
@@ -886,7 +641,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490061426",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 14332.02
         },
         {
           "Portfolio": null,
@@ -918,7 +674,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490061426",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 22075.2
         },
         {
           "Portfolio": null,
@@ -950,7 +707,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490061426",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 80553.55
         },
         {
           "Portfolio": null,
@@ -982,7 +740,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490061426",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 218696.23
         },
         {
           "Portfolio": null,
@@ -1014,7 +773,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037446",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 8503.49
         },
         {
           "Portfolio": null,
@@ -1046,7 +806,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037446",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 14777.97
         },
         {
           "Portfolio": null,
@@ -1078,7 +839,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037446",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 70746.54
         },
         {
           "Portfolio": null,
@@ -1110,7 +872,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037838",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 25989.06
         },
         {
           "Portfolio": null,
@@ -1142,7 +905,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037838",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 36669.66
         },
         {
           "Portfolio": null,
@@ -1174,7 +938,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037838",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 80553.9
         },
         {
           "Portfolio": null,
@@ -1206,7 +971,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037838",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 618000.38
         },
         {
           "Portfolio": null,
@@ -1238,7 +1004,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037378",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 14332.02
         },
         {
           "Portfolio": null,
@@ -1270,7 +1037,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037378",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 22075.2
         },
         {
           "Portfolio": null,
@@ -1302,7 +1070,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037378",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 115553.44
         },
         {
           "Portfolio": null,
@@ -1334,7 +1103,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037378",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 815587.34
         },
         {
           "Portfolio": null,
@@ -1366,7 +1136,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037460",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 8503.49
         },
         {
           "Portfolio": null,
@@ -1398,7 +1169,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037460",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 14777.97
         },
         {
           "Portfolio": null,
@@ -1430,7 +1202,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037460",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 111554.35
         },
         {
           "Portfolio": null,
@@ -1462,7 +1235,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490037460",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 659694.19
         },
         {
           "Portfolio": null,
@@ -1494,7 +1268,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490061448",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 8503.49
         },
         {
           "Portfolio": null,
@@ -1526,7 +1301,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490061448",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 14777.97
         },
         {
           "Portfolio": null,
@@ -1558,7 +1334,8 @@
           "nit_normalized": "890905055",
           "supplier_normalized": "EMPRESAS DE MEDELLIN ESP",
           "invoice_id_normalized": "1490061448",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 80553.54
         }
       ]
     },
@@ -1571,9 +1348,9 @@
       "facturas_excel": 5,
       "facturas_comunes": 5,
       "total_pdf": 118795591.09,
-      "total_excel": 118795591.08999999,
-      "diferencia_absoluta": 1.4901161193847656e-08,
-      "diferencia_porcentual": 1.2543530493954509e-14,
+      "total_excel": 121052707.33,
+      "diferencia_absoluta": 2257116.2399999946,
+      "diferencia_porcentual": 1.8645731184242773,
       "diferencias": [
         "Nombres: PDF='COOPERATIVA DE VIGILANCIA Y SEGURIDAD' vs Excel='COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA LTDA'"
       ],
@@ -1720,7 +1497,8 @@
           "nit_normalized": "890982458",
           "supplier_normalized": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA",
           "invoice_id_normalized": "FM50620",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 12510773.36
         },
         {
           "Portfolio": "LCNX",
@@ -1733,7 +1511,7 @@
           "NIT": "890982458",
           "Subtotal": 1390085.93,
           "VAT/WHT1": 264116.33,
-          "Amount Total": 1390085.93,
+          "Amount Total": 1654202.26,
           "Curr.": "COP",
           "Ex. Rate": 4473.36,
           "In USD": 369.7896569916126,
@@ -1752,7 +1530,8 @@
           "nit_normalized": "890982458",
           "supplier_normalized": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA",
           "invoice_id_normalized": "FM50620",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 1390085.93
         },
         {
           "Portfolio": "LCNX",
@@ -1784,7 +1563,8 @@
           "nit_normalized": "890982458",
           "supplier_normalized": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA",
           "invoice_id_normalized": "FM50622",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 48282666.44
         },
         {
           "Portfolio": "LCNX",
@@ -1797,7 +1577,7 @@
           "NIT": "890982458",
           "Subtotal": 5364740.72,
           "VAT/WHT1": 1019300.74,
-          "Amount Total": 5364740.72,
+          "Amount Total": 6384041.46,
           "Curr.": "COP",
           "Ex. Rate": 4473.36,
           "In USD": 1427.1244567841622,
@@ -1816,7 +1596,8 @@
           "nit_normalized": "890982458",
           "supplier_normalized": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA",
           "invoice_id_normalized": "FM50622",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 5364740.72
         },
         {
           "Portfolio": "LCNX",
@@ -1848,7 +1629,8 @@
           "nit_normalized": "890982458",
           "supplier_normalized": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA",
           "invoice_id_normalized": "FM50625",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 8590272.1
         },
         {
           "Portfolio": "LCNX",
@@ -1861,7 +1643,7 @@
           "NIT": "890982458",
           "Subtotal": 954474.68,
           "VAT/WHT1": 181350.19,
-          "Amount Total": 954474.68,
+          "Amount Total": 1135824.87,
           "Curr.": "COP",
           "Ex. Rate": 4473.36,
           "In USD": 253.9086659692044,
@@ -1880,7 +1662,8 @@
           "nit_normalized": "890982458",
           "supplier_normalized": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA",
           "invoice_id_normalized": "FM50625",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 954474.68
         },
         {
           "Portfolio": "LCNX",
@@ -1912,7 +1695,8 @@
           "nit_normalized": "890982458",
           "supplier_normalized": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA",
           "invoice_id_normalized": "FM50621",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 25021546.71
         },
         {
           "Portfolio": "LCNX",
@@ -1925,7 +1709,7 @@
           "NIT": "890982458",
           "Subtotal": 2780171.86,
           "VAT/WHT1": 528232.65,
-          "Amount Total": 2780171.86,
+          "Amount Total": 3308404.51,
           "Curr.": "COP",
           "Ex. Rate": 4473.36,
           "In USD": 739.579311747769,
@@ -1944,7 +1728,8 @@
           "nit_normalized": "890982458",
           "supplier_normalized": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA",
           "invoice_id_normalized": "FM50621",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 2780171.86
         },
         {
           "Portfolio": "LCNX",
@@ -1976,7 +1761,8 @@
           "nit_normalized": "890982458",
           "supplier_normalized": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA",
           "invoice_id_normalized": "FM50623",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 12510773.36
         },
         {
           "Portfolio": "LCNX",
@@ -1989,7 +1775,7 @@
           "NIT": "890982458",
           "Subtotal": 1390085.93,
           "VAT/WHT1": 264116.33,
-          "Amount Total": 1390085.93,
+          "Amount Total": 1654202.26,
           "Curr.": "COP",
           "Ex. Rate": 4473.36,
           "In USD": 369.7896569916126,
@@ -2008,7 +1794,269 @@
           "nit_normalized": "890982458",
           "supplier_normalized": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA",
           "invoice_id_normalized": "FM50623",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 1390085.93
+        }
+      ]
+    },
+    {
+      "nit": "890900943",
+      "nombre_proveedor": "Colombiana de Comercio S.A.",
+      "estado": "DIFIEREN",
+      "nombre_coincide": false,
+      "facturas_pdf": 3,
+      "facturas_excel": 3,
+      "facturas_comunes": 3,
+      "total_pdf": 12294666.0,
+      "total_excel": 12474100.0,
+      "diferencia_absoluta": 179434.0,
+      "diferencia_porcentual": 1.438452473525144,
+      "diferencias": [
+        "Nombres: PDF='Colombiana de Comercio S.A.' vs Excel='COLOMBIANA DE COMERCIO SA Y/O ALKOSTO SA'"
+      ],
+      "facturas_pdf_detalle": [
+        {
+          "source_file": "YCO01_ Colombiana de Comercio S.A. _X9922531320.pdf",
+          "nombre_proveedor": "Colombiana de Comercio S.A.",
+          "nit_proveedor": "890900943",
+          "nit_normalized": "890900943",
+          "digito_verificacion": "1",
+          "numero_factura": "X9922531320",
+          "invoice_id_normalized": "X9922531320",
+          "fecha_inicio": "2026-01-14",
+          "fecha_final": "2026-01-14",
+          "moneda": "COP",
+          "subtotal": 3260515.0,
+          "iva_porcentaje": 19,
+          "iva_monto": 4948.0,
+          "otros_impuestos": 0.0,
+          "total": 3260515.0,
+          "numero_lineas": null,
+          "orden_compra": null,
+          "cufe": "c5909ad21f6a3615d1fc0d1b8b2700a2bca4503e01cf",
+          "tipo_factura": "electrónica",
+          "supplier_normalized": "COLOMBIANA DE COMERCIO"
+        },
+        {
+          "source_file": "YCO01_ Colombiana de Comercio S.A. _X9922531321.pdf",
+          "nombre_proveedor": "Colombiana de Comercio S.A.",
+          "nit_proveedor": "890900943",
+          "nit_normalized": "890900943",
+          "digito_verificacion": "1",
+          "numero_factura": "X9922531321",
+          "invoice_id_normalized": "X9922531321",
+          "fecha_inicio": "2026-01-14",
+          "fecha_final": "2026-01-14",
+          "moneda": "COP",
+          "subtotal": 3976740.0,
+          "iva_porcentaje": 19,
+          "iva_monto": 5256.0,
+          "otros_impuestos": 0.0,
+          "total": 3976740.0,
+          "numero_lineas": null,
+          "orden_compra": "PO-YCO01-26000017",
+          "cufe": "1fafa4edb8483fcbe8d0484856a291eb29f79463b447",
+          "tipo_factura": "electrónica",
+          "supplier_normalized": "COLOMBIANA DE COMERCIO"
+        },
+        {
+          "source_file": "YCO01_ Colombiana de Comercio S.A. _X9922531322.pdf",
+          "nombre_proveedor": "Colombiana de Comercio S.A.",
+          "nit_proveedor": "890900943",
+          "nit_normalized": "890900943",
+          "digito_verificacion": "1",
+          "numero_factura": "X9922531322",
+          "invoice_id_normalized": "X9922531322",
+          "fecha_inicio": "2026-01-14",
+          "fecha_final": "2026-01-14",
+          "moneda": "COP",
+          "subtotal": 5057411.0,
+          "iva_porcentaje": 19,
+          "iva_monto": 7738.0,
+          "otros_impuestos": 0.0,
+          "total": 5057411.0,
+          "numero_lineas": null,
+          "orden_compra": "PO-YCO01-26000016",
+          "cufe": "c4a048c9e458457bdd319c487aecb8b4d7cd626ea9b6",
+          "tipo_factura": "electrónica",
+          "supplier_normalized": "COLOMBIANA DE COMERCIO"
+        }
+      ],
+      "facturas_excel_detalle": [
+        {
+          "Portfolio": "LCNX",
+          "COA": "YCO01",
+          "Request Date": "2026-01-20",
+          "Invoice Date": "2026-01-14",
+          "Due Date": "2026-02-13",
+          "Supplier/Beneficiary Name": "COLOMBIANA DE COMERCIO SA Y/O ALKOSTO SA",
+          "Invoice ID": "X9922531320",
+          "NIT": "890900943",
+          "Subtotal": 3260515.0,
+          "VAT/WHT1": 49485.0,
+          "Amount Total": 3310000.0,
+          "Curr.": "COP",
+          "Ex. Rate": 4473.36,
+          "In USD": 739.9359765366526,
+          "Category": null,
+          "PO #": "PO-YCO01-25001502",
+          "Spend Category": "Employee Rewards",
+          "Cost Center": "COGS (SITE) Production Agent Direct",
+          "Location": "COL Bogota - Plaza Titan",
+          "MSA": "11128 - Walt Disney Pictures - 980002449",
+          "Line Item Description": "COMPRA PREMIOS DICIEMBRE DISNEY20 TARJETAS VANILLA X $50.000 MAS $6.600 POR ACTIVACION20 TARJETAS VA",
+          "Base / Subtotal": 3260515.0,
+          "VAT Total": 0.0,
+          "WHT Total": 0.0,
+          "Total a Pagar": 3260515.0,
+          "orden_compra": "PO-YCO01-25001502",
+          "nit_normalized": "890900943",
+          "supplier_normalized": "COLOMBIANA DE COMERCIO YO ALKOSTO",
+          "invoice_id_normalized": "X9922531320",
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 3260515.0
+        },
+        {
+          "Portfolio": "LCNX",
+          "COA": "YCO01",
+          "Request Date": "2026-01-20",
+          "Invoice Date": "2026-01-14",
+          "Due Date": "2026-02-13",
+          "Supplier/Beneficiary Name": "COLOMBIANA DE COMERCIO SA Y/O ALKOSTO SA",
+          "Invoice ID": "X9922531322",
+          "NIT": "890900943",
+          "Subtotal": 5057411.0,
+          "VAT/WHT1": 77389.0,
+          "Amount Total": 5134800.0,
+          "Curr.": "COP",
+          "Ex. Rate": 4473.36,
+          "In USD": 1147.8620097644725,
+          "Category": null,
+          "PO #": "PO-YCO01-26000016",
+          "Spend Category": "Client Funded Employee Rewards",
+          "Cost Center": "COGS (SITE) Production Agent Direct",
+          "Location": "COL Bogota - Oficinas y terrazas de",
+          "MSA": "11295 - Bridgecrest - 980002674",
+          "Line Item Description": "COMPRA DE 33 TARJETAS VANILLA X $50.000 MAS $6.600 POR ACTIVACION COMPRA DE 30 TARJETAS VANILLA X $1",
+          "Base / Subtotal": 5057411.0,
+          "VAT Total": 0.0,
+          "WHT Total": 0.0,
+          "Total a Pagar": 5057411.0,
+          "orden_compra": "PO-YCO01-26000016",
+          "nit_normalized": "890900943",
+          "supplier_normalized": "COLOMBIANA DE COMERCIO YO ALKOSTO",
+          "invoice_id_normalized": "X9922531322",
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 5057411.0
+        },
+        {
+          "Portfolio": "LCNX",
+          "COA": "YCO01",
+          "Request Date": "2026-01-20",
+          "Invoice Date": "2026-01-14",
+          "Due Date": "2026-02-13",
+          "Supplier/Beneficiary Name": "COLOMBIANA DE COMERCIO SA Y/O ALKOSTO SA",
+          "Invoice ID": "X9922531321",
+          "NIT": "890900943",
+          "Subtotal": 3976740.0,
+          "VAT/WHT1": 52560.0,
+          "Amount Total": 4029300.0,
+          "Curr.": "COP",
+          "Ex. Rate": 4473.36,
+          "In USD": 900.7323354257203,
+          "Category": null,
+          "PO #": "PO-YCO01-26000017",
+          "Spend Category": "Client Funded Employee Rewards",
+          "Cost Center": "COGS (SITE) Production Agent Direct",
+          "Location": "COL Bogota - Oficinas y terrazas de",
+          "MSA": "11295 - Bridgecrest - 980002674",
+          "Line Item Description": "COMPRA DE 37 TARJETAS VANILLA X $100.000 MAS $8.900 DE ACTIVACION CLIENT FUNDED",
+          "Base / Subtotal": 3976740.0,
+          "VAT Total": 0.0,
+          "WHT Total": 0.0,
+          "Total a Pagar": 3976740.0,
+          "orden_compra": "PO-YCO01-26000017",
+          "nit_normalized": "890900943",
+          "supplier_normalized": "COLOMBIANA DE COMERCIO YO ALKOSTO",
+          "invoice_id_normalized": "X9922531321",
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 3976740.0
+        }
+      ]
+    },
+    {
+      "nit": "900552533",
+      "nombre_proveedor": "VLA S.A.S",
+      "estado": "DIFIEREN",
+      "nombre_coincide": false,
+      "facturas_pdf": 1,
+      "facturas_excel": 1,
+      "facturas_comunes": 1,
+      "total_pdf": 1515159.0,
+      "total_excel": 1803039.21,
+      "diferencia_absoluta": 287880.20999999996,
+      "diferencia_porcentual": 15.966386554621847,
+      "diferencias": [
+        "Nombres: PDF='VLA S.A.S' vs Excel='VLA SAS'",
+        "Montos: PDF=$1,515,159.00 vs Excel=$1,803,039.21 (diferencia 16.0%)"
+      ],
+      "facturas_pdf_detalle": [
+        {
+          "source_file": "YCO01_VLA S.A.S_FE2560.pdf",
+          "nombre_proveedor": "VLA S.A.S",
+          "nit_proveedor": "900552533",
+          "nit_normalized": "900552533",
+          "digito_verificacion": "7",
+          "numero_factura": "FE2560",
+          "invoice_id_normalized": "FE2560",
+          "fecha_inicio": "2026-01-13",
+          "fecha_final": "2026-02-12",
+          "moneda": "COP",
+          "subtotal": 1515159.0,
+          "iva_porcentaje": 19,
+          "iva_monto": 0.0,
+          "otros_impuestos": 0.0,
+          "total": 1515159.0,
+          "numero_lineas": 2.0,
+          "orden_compra": null,
+          "cufe": "9c06da8d2500d2eedf1f0f0742a2653eea8d02a959f7055d2caf2c04f5ca0fa6a7981404a6c8ee2133d6e51dc9815525",
+          "tipo_factura": "electrónica",
+          "supplier_normalized": "VLAS"
+        }
+      ],
+      "facturas_excel_detalle": [
+        {
+          "Portfolio": "LCNX",
+          "COA": "YCO01",
+          "Request Date": "2026-01-20",
+          "Invoice Date": "2026-01-13",
+          "Due Date": "2026-02-12",
+          "Supplier/Beneficiary Name": "VLA SAS",
+          "Invoice ID": "FE2560",
+          "NIT": "900552533",
+          "Subtotal": 1515159.0,
+          "VAT/WHT1": 287880.21,
+          "Amount Total": 1803039.21,
+          "Curr.": "COP",
+          "Ex. Rate": 4473.36,
+          "In USD": 403.06150410429746,
+          "Category": "Description",
+          "PO #": "PO-YCO01-25001469",
+          "Spend Category": "Marketing and Public Relations",
+          "Cost Center": "(GEO) Regional Marketing Delivery-Indirect",
+          "Location": "COL Bogota - Oficinas y terrazas de",
+          "MSA": "23262 - Opexother - LAGEOCSO",
+          "Line Item Description": "This PO is for the additional expenses that we need to cover during the clients end of the year even",
+          "Base / Subtotal": 1515159.0,
+          "VAT Total": 0.0,
+          "WHT Total": 0.0,
+          "Total a Pagar": 1515159.0,
+          "orden_compra": "PO-YCO01-25001469",
+          "nit_normalized": "900552533",
+          "supplier_normalized": "VLA",
+          "invoice_id_normalized": "FE2560",
+          "invoice_date_normalized": "2026-01-13",
+          "total_excel": 1515159.0
         }
       ]
     },
@@ -2268,6 +2316,223 @@
       "facturas_excel_detalle": []
     },
     {
+      "nit": "800079939",
+      "nombre_proveedor": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
+      "estado": "SOLO_EXCEL",
+      "nombre_coincide": false,
+      "facturas_pdf": 0,
+      "facturas_excel": 6,
+      "facturas_comunes": 0,
+      "total_pdf": 0,
+      "total_excel": 9015440.0,
+      "diferencia_absoluta": 0,
+      "diferencia_porcentual": 0,
+      "diferencias": [
+        "Proveedor no encontrado en facturas PDF"
+      ],
+      "facturas_pdf_detalle": [],
+      "facturas_excel_detalle": [
+        {
+          "Portfolio": "LCNX",
+          "COA": "YCO01",
+          "Request Date": "2026-01-20",
+          "Invoice Date": "2026-01-14",
+          "Due Date": "2026-02-13",
+          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
+          "Invoice ID": "59202",
+          "NIT": "800079939",
+          "Subtotal": 272000.0,
+          "VAT/WHT1": 51680.0,
+          "Amount Total": 323680.0,
+          "Curr.": "COP",
+          "Ex. Rate": 4473.36,
+          "In USD": 72.35724377201925,
+          "Category": null,
+          "PO #": "PO-YCO01-25000905",
+          "Spend Category": "Repair and Maintenance",
+          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
+          "Location": "COL Bogota - Oficinas y terrazas de",
+          "MSA": "23126 - Opexother - SITECSO",
+          "Line Item Description": "monitoreo UPS Service 1 Line 1 Bogota 5 â€“ 6 Equipements:Â  68 USD Mensual 272000 COP mensual 3264000",
+          "Base / Subtotal": 272000.0,
+          "VAT Total": 0.0,
+          "WHT Total": 0.0,
+          "Total a Pagar": 272000.0,
+          "orden_compra": "PO-YCO01-25000905",
+          "nit_normalized": "800079939",
+          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
+          "invoice_id_normalized": "59202",
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 272000.0
+        },
+        {
+          "Portfolio": "LCNX",
+          "COA": "YCO01",
+          "Request Date": "2026-01-20",
+          "Invoice Date": "2026-01-14",
+          "Due Date": "2026-02-13",
+          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
+          "Invoice ID": "59201",
+          "NIT": "800079939",
+          "Subtotal": 272000.0,
+          "VAT/WHT1": 51680.0,
+          "Amount Total": 323680.0,
+          "Curr.": "COP",
+          "Ex. Rate": 4473.36,
+          "In USD": 72.35724377201925,
+          "Category": null,
+          "PO #": "PO-YCO01-25000909",
+          "Spend Category": "Repair and Maintenance",
+          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
+          "Location": "COL Bogota - Plaza Titan",
+          "MSA": "23126 - Opexother - SITECSO",
+          "Line Item Description": "monitoreo UPS Service 2 Line 2 Bogota 4 â€“ 6 Equipements:Â  68 USD Mensual 272000 COP mensual 3264000",
+          "Base / Subtotal": 272000.0,
+          "VAT Total": 0.0,
+          "WHT Total": 0.0,
+          "Total a Pagar": 272000.0,
+          "orden_compra": "PO-YCO01-25000909",
+          "nit_normalized": "800079939",
+          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
+          "invoice_id_normalized": "59201",
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 272000.0
+        },
+        {
+          "Portfolio": "LCNX",
+          "COA": "YCO01",
+          "Request Date": "2026-01-20",
+          "Invoice Date": "2026-01-14",
+          "Due Date": "2026-02-13",
+          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
+          "Invoice ID": "59206",
+          "NIT": "800079939",
+          "Subtotal": 1008000.0,
+          "VAT/WHT1": 191520.0,
+          "Amount Total": 1199520.0,
+          "Curr.": "COP",
+          "Ex. Rate": 4473.36,
+          "In USD": 268.147432802189,
+          "Category": null,
+          "PO #": "PO-YCO01-25000900",
+          "Spend Category": "Repair and Maintenance",
+          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
+          "Location": "COL Medellin -Proyecto FIC 48 18A-14",
+          "MSA": "23126 - Opexother - SITECSO",
+          "Line Item Description": "mantenimiento anual UPS  FIC 48 Enero 1008000",
+          "Base / Subtotal": 1008000.0,
+          "VAT Total": 0.0,
+          "WHT Total": 0.0,
+          "Total a Pagar": 1008000.0,
+          "orden_compra": "PO-YCO01-25000900",
+          "nit_normalized": "800079939",
+          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
+          "invoice_id_normalized": "59206",
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 1008000.0
+        },
+        {
+          "Portfolio": "LCNX",
+          "COA": "YCO01",
+          "Request Date": "2026-01-20",
+          "Invoice Date": "2026-01-14",
+          "Due Date": "2026-02-13",
+          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
+          "Invoice ID": "59203",
+          "NIT": "800079939",
+          "Subtotal": 180000.0,
+          "VAT/WHT1": 34200.0,
+          "Amount Total": 214200.0,
+          "Curr.": "COP",
+          "Ex. Rate": 4473.36,
+          "In USD": 47.88347014324803,
+          "Category": null,
+          "PO #": "PO-YCO01-25000903",
+          "Spend Category": "Repair and Maintenance",
+          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
+          "Location": "COL Medellin -Proyecto FIC 48 18A-14",
+          "MSA": "23126 - Opexother - SITECSO",
+          "Line Item Description": "monitoreo UPS Service 7 Line 7 FIC â€“ 4 Equipements:Â  45 USD Mensual 180000 COP mensual 2160000 cop a",
+          "Base / Subtotal": 180000.0,
+          "VAT Total": 0.0,
+          "WHT Total": 0.0,
+          "Total a Pagar": 180000.0,
+          "orden_compra": "PO-YCO01-25000903",
+          "nit_normalized": "800079939",
+          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
+          "invoice_id_normalized": "59203",
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 180000.0
+        },
+        {
+          "Portfolio": "LCNX",
+          "COA": "YCO01",
+          "Request Date": "2026-01-20",
+          "Invoice Date": "2026-01-14",
+          "Due Date": "2026-02-13",
+          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
+          "Invoice ID": "59208",
+          "NIT": "800079939",
+          "Subtotal": 2828000.0,
+          "VAT/WHT1": 537320.0,
+          "Amount Total": 3365320.0,
+          "Curr.": "COP",
+          "Ex. Rate": 4473.36,
+          "In USD": 752.3025198061413,
+          "Category": null,
+          "PO #": "PO-YCO01-25000899",
+          "Spend Category": "Repair and Maintenance",
+          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
+          "Location": "COL Bogota - Plaza Titan",
+          "MSA": "23126 - Opexother - SITECSO",
+          "Line Item Description": "mantenimiento anual UPS  Titan Enero 2828000",
+          "Base / Subtotal": 2828000.0,
+          "VAT Total": 0.0,
+          "WHT Total": 0.0,
+          "Total a Pagar": 2828000.0,
+          "orden_compra": "PO-YCO01-25000899",
+          "nit_normalized": "800079939",
+          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
+          "invoice_id_normalized": "59208",
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 2828000.0
+        },
+        {
+          "Portfolio": "LCNX",
+          "COA": "YCO01",
+          "Request Date": "2026-01-20",
+          "Invoice Date": "2026-01-14",
+          "Due Date": "2026-02-13",
+          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
+          "Invoice ID": "59205",
+          "NIT": "800079939",
+          "Subtotal": 3016000.0,
+          "VAT/WHT1": 573040.0,
+          "Amount Total": 3589040.0,
+          "Curr.": "COP",
+          "Ex. Rate": 4473.36,
+          "In USD": 802.3141441779782,
+          "Category": null,
+          "PO #": "PO-YCO01-25000901",
+          "Spend Category": "Repair and Maintenance",
+          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
+          "Location": "COL Bogota - Oficinas y terrazas de",
+          "MSA": "23126 - Opexother - SITECSO",
+          "Line Item Description": "mantenimiento anual UPS  Torre 90 Enero 3016000",
+          "Base / Subtotal": 3016000.0,
+          "VAT Total": 0.0,
+          "WHT Total": 0.0,
+          "Total a Pagar": 3016000.0,
+          "orden_compra": "PO-YCO01-25000901",
+          "nit_normalized": "800079939",
+          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
+          "invoice_id_normalized": "59205",
+          "invoice_date_normalized": "2026-01-14",
+          "total_excel": 3016000.0
+        }
+      ]
+    },
+    {
       "nit": "901487738",
       "nombre_proveedor": "EDIFICIO TORRE 90 - PROPIEDAD HORIZONTAL",
       "estado": "SOLO_EXCEL",
@@ -2314,7 +2579,8 @@
           "nit_normalized": "901487738",
           "supplier_normalized": "EDIFICIO TORRE 90  PROPIEDAD HORIZONTAL",
           "invoice_id_normalized": "CTA25001539",
-          "invoice_date_normalized": "2026-08-01"
+          "invoice_date_normalized": "2026-08-01",
+          "total_excel": 650000.0
         }
       ]
     },
@@ -2365,7 +2631,8 @@
           "nit_normalized": "000191",
           "supplier_normalized": "CAMARA DE COMERCIO DE BOGOTA",
           "invoice_id_normalized": "COYCO010801",
-          "invoice_date_normalized": "2026-07-01"
+          "invoice_date_normalized": "2026-07-01",
+          "total_excel": 12100.0
         }
       ]
     },
@@ -2416,218 +2683,8 @@
           "nit_normalized": "676769570",
           "supplier_normalized": "GVM LIMITED",
           "invoice_id_normalized": "CONCENTRIX-INV-202512-27",
-          "invoice_date_normalized": "2026-01-01"
-        }
-      ]
-    },
-    {
-      "nit": "800079939",
-      "nombre_proveedor": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
-      "estado": "SOLO_EXCEL",
-      "nombre_coincide": false,
-      "facturas_pdf": 0,
-      "facturas_excel": 6,
-      "facturas_comunes": 0,
-      "total_pdf": 0,
-      "total_excel": 7576000.0,
-      "diferencia_absoluta": 0,
-      "diferencia_porcentual": 0,
-      "diferencias": [
-        "Proveedor no encontrado en facturas PDF"
-      ],
-      "facturas_pdf_detalle": [],
-      "facturas_excel_detalle": [
-        {
-          "Portfolio": "LCNX",
-          "COA": "YCO01",
-          "Request Date": "2026-01-20",
-          "Invoice Date": "2026-01-14",
-          "Due Date": "2026-02-13",
-          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
-          "Invoice ID": "59202",
-          "NIT": "800079939",
-          "Subtotal": 272000.0,
-          "VAT/WHT1": 51680.0,
-          "Amount Total": 272000.0,
-          "Curr.": "COP",
-          "Ex. Rate": 4473.36,
-          "In USD": 72.35724377201925,
-          "Category": null,
-          "PO #": "PO-YCO01-25000905",
-          "Spend Category": "Repair and Maintenance",
-          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
-          "Location": "COL Bogota - Oficinas y terrazas de",
-          "MSA": "23126 - Opexother - SITECSO",
-          "Line Item Description": "monitoreo UPS Service 1 Line 1 Bogota 5 â€“ 6 Equipements:Â  68 USD Mensual 272000 COP mensual 3264000",
-          "Base / Subtotal": 272000.0,
-          "VAT Total": 0.0,
-          "WHT Total": 0.0,
-          "Total a Pagar": 272000.0,
-          "orden_compra": "PO-YCO01-25000905",
-          "nit_normalized": "800079939",
-          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
-          "invoice_id_normalized": "59202",
-          "invoice_date_normalized": "2026-01-14"
-        },
-        {
-          "Portfolio": "LCNX",
-          "COA": "YCO01",
-          "Request Date": "2026-01-20",
-          "Invoice Date": "2026-01-14",
-          "Due Date": "2026-02-13",
-          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
-          "Invoice ID": "59201",
-          "NIT": "800079939",
-          "Subtotal": 272000.0,
-          "VAT/WHT1": 51680.0,
-          "Amount Total": 272000.0,
-          "Curr.": "COP",
-          "Ex. Rate": 4473.36,
-          "In USD": 72.35724377201925,
-          "Category": null,
-          "PO #": "PO-YCO01-25000909",
-          "Spend Category": "Repair and Maintenance",
-          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
-          "Location": "COL Bogota - Plaza Titan",
-          "MSA": "23126 - Opexother - SITECSO",
-          "Line Item Description": "monitoreo UPS Service 2 Line 2 Bogota 4 â€“ 6 Equipements:Â  68 USD Mensual 272000 COP mensual 3264000",
-          "Base / Subtotal": 272000.0,
-          "VAT Total": 0.0,
-          "WHT Total": 0.0,
-          "Total a Pagar": 272000.0,
-          "orden_compra": "PO-YCO01-25000909",
-          "nit_normalized": "800079939",
-          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
-          "invoice_id_normalized": "59201",
-          "invoice_date_normalized": "2026-01-14"
-        },
-        {
-          "Portfolio": "LCNX",
-          "COA": "YCO01",
-          "Request Date": "2026-01-20",
-          "Invoice Date": "2026-01-14",
-          "Due Date": "2026-02-13",
-          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
-          "Invoice ID": "59206",
-          "NIT": "800079939",
-          "Subtotal": 1008000.0,
-          "VAT/WHT1": 191520.0,
-          "Amount Total": 1008000.0,
-          "Curr.": "COP",
-          "Ex. Rate": 4473.36,
-          "In USD": 268.147432802189,
-          "Category": null,
-          "PO #": "PO-YCO01-25000900",
-          "Spend Category": "Repair and Maintenance",
-          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
-          "Location": "COL Medellin -Proyecto FIC 48 18A-14",
-          "MSA": "23126 - Opexother - SITECSO",
-          "Line Item Description": "mantenimiento anual UPS  FIC 48 Enero 1008000",
-          "Base / Subtotal": 1008000.0,
-          "VAT Total": 0.0,
-          "WHT Total": 0.0,
-          "Total a Pagar": 1008000.0,
-          "orden_compra": "PO-YCO01-25000900",
-          "nit_normalized": "800079939",
-          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
-          "invoice_id_normalized": "59206",
-          "invoice_date_normalized": "2026-01-14"
-        },
-        {
-          "Portfolio": "LCNX",
-          "COA": "YCO01",
-          "Request Date": "2026-01-20",
-          "Invoice Date": "2026-01-14",
-          "Due Date": "2026-02-13",
-          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
-          "Invoice ID": "59203",
-          "NIT": "800079939",
-          "Subtotal": 180000.0,
-          "VAT/WHT1": 34200.0,
-          "Amount Total": 180000.0,
-          "Curr.": "COP",
-          "Ex. Rate": 4473.36,
-          "In USD": 47.88347014324803,
-          "Category": null,
-          "PO #": "PO-YCO01-25000903",
-          "Spend Category": "Repair and Maintenance",
-          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
-          "Location": "COL Medellin -Proyecto FIC 48 18A-14",
-          "MSA": "23126 - Opexother - SITECSO",
-          "Line Item Description": "monitoreo UPS Service 7 Line 7 FIC â€“ 4 Equipements:Â  45 USD Mensual 180000 COP mensual 2160000 cop a",
-          "Base / Subtotal": 180000.0,
-          "VAT Total": 0.0,
-          "WHT Total": 0.0,
-          "Total a Pagar": 180000.0,
-          "orden_compra": "PO-YCO01-25000903",
-          "nit_normalized": "800079939",
-          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
-          "invoice_id_normalized": "59203",
-          "invoice_date_normalized": "2026-01-14"
-        },
-        {
-          "Portfolio": "LCNX",
-          "COA": "YCO01",
-          "Request Date": "2026-01-20",
-          "Invoice Date": "2026-01-14",
-          "Due Date": "2026-02-13",
-          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
-          "Invoice ID": "59208",
-          "NIT": "800079939",
-          "Subtotal": 2828000.0,
-          "VAT/WHT1": 537320.0,
-          "Amount Total": 2828000.0,
-          "Curr.": "COP",
-          "Ex. Rate": 4473.36,
-          "In USD": 752.3025198061413,
-          "Category": null,
-          "PO #": "PO-YCO01-25000899",
-          "Spend Category": "Repair and Maintenance",
-          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
-          "Location": "COL Bogota - Plaza Titan",
-          "MSA": "23126 - Opexother - SITECSO",
-          "Line Item Description": "mantenimiento anual UPS  Titan Enero 2828000",
-          "Base / Subtotal": 2828000.0,
-          "VAT Total": 0.0,
-          "WHT Total": 0.0,
-          "Total a Pagar": 2828000.0,
-          "orden_compra": "PO-YCO01-25000899",
-          "nit_normalized": "800079939",
-          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
-          "invoice_id_normalized": "59208",
-          "invoice_date_normalized": "2026-01-14"
-        },
-        {
-          "Portfolio": "LCNX",
-          "COA": "YCO01",
-          "Request Date": "2026-01-20",
-          "Invoice Date": "2026-01-14",
-          "Due Date": "2026-02-13",
-          "Supplier/Beneficiary Name": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA SAS",
-          "Invoice ID": "59205",
-          "NIT": "800079939",
-          "Subtotal": 3016000.0,
-          "VAT/WHT1": 573040.0,
-          "Amount Total": 3016000.0,
-          "Curr.": "COP",
-          "Ex. Rate": 4473.36,
-          "In USD": 802.3141441779782,
-          "Category": null,
-          "PO #": "PO-YCO01-25000901",
-          "Spend Category": "Repair and Maintenance",
-          "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
-          "Location": "COL Bogota - Oficinas y terrazas de",
-          "MSA": "23126 - Opexother - SITECSO",
-          "Line Item Description": "mantenimiento anual UPS  Torre 90 Enero 3016000",
-          "Base / Subtotal": 3016000.0,
-          "VAT Total": 0.0,
-          "WHT Total": 0.0,
-          "Total a Pagar": 3016000.0,
-          "orden_compra": "PO-YCO01-25000901",
-          "nit_normalized": "800079939",
-          "supplier_normalized": "SUCOMPUTO INFRAESTRUCTURA TECNOLOGICA",
-          "invoice_id_normalized": "59205",
-          "invoice_date_normalized": "2026-01-14"
+          "invoice_date_normalized": "2026-01-01",
+          "total_excel": 5134.98
         }
       ]
     },
@@ -2678,19 +2735,20 @@
           "nit_normalized": "352886667",
           "supplier_normalized": "MOON CREATIVO LLC",
           "invoice_id_normalized": "INV32",
-          "invoice_date_normalized": "2026-01-16"
+          "invoice_date_normalized": "2026-01-16",
+          "total_excel": 3040.0
         }
       ]
     }
   ],
   "resumen_conciliacion": {
     "metricas_globales": {
-      "proveedores_match": 2,
-      "proveedores_difieren": 4,
+      "proveedores_match": 1,
+      "proveedores_difieren": 5,
       "solo_pdf": 3,
       "solo_excel": 5,
       "total_proveedores": 14,
-      "porcentaje_coincidencia": 14.29
+      "porcentaje_coincidencia": 7.14
     },
     "montos_totales": {
       "total_pdf": 273731769.18,
@@ -2712,19 +2770,53 @@
         ]
       },
       {
+        "nit": "900552533",
+        "nombre_proveedor": "VLA S.A.S",
+        "diferencia_porcentual": 15.97,
+        "diferencia_absoluta": 287880.21,
+        "total_pdf": 1515159.0,
+        "total_excel": 1803039.21,
+        "diferencias_detalle": [
+          "Nombres: PDF='VLA S.A.S' vs Excel='VLA SAS'",
+          "Montos: PDF=$1,515,159.00 vs Excel=$1,803,039.21 (diferencia 16.0%)"
+        ]
+      },
+      {
+        "nit": "800199498",
+        "nombre_proveedor": "IDENTICO SAS",
+        "diferencia_porcentual": 15.97,
+        "diferencia_absoluta": 268604.9,
+        "total_pdf": 1413710.0,
+        "total_excel": 1682314.9,
+        "diferencias_detalle": [
+          "Montos: PDF=$1,413,710.00 vs Excel=$1,682,314.90 (diferencia 16.0%)"
+        ]
+      },
+      {
         "nit": "890982458",
         "nombre_proveedor": "COOPERATIVA DE VIGILANCIA Y SEGURIDAD",
-        "diferencia_porcentual": 0.0,
-        "diferencia_absoluta": 0.0,
+        "diferencia_porcentual": 1.86,
+        "diferencia_absoluta": 2257116.24,
         "total_pdf": 118795591.09,
-        "total_excel": 118795591.09,
+        "total_excel": 121052707.33,
         "diferencias_detalle": [
           "Nombres: PDF='COOPERATIVA DE VIGILANCIA Y SEGURIDAD' vs Excel='COOPERATIVA DE VIGILANCIA Y SEGURIDAD PROFESIONAL DE ANTIOQUIA COOPERATIVA LTDA'"
+        ]
+      },
+      {
+        "nit": "890900943",
+        "nombre_proveedor": "Colombiana de Comercio S.A.",
+        "diferencia_porcentual": 1.44,
+        "diferencia_absoluta": 179434.0,
+        "total_pdf": 12294666.0,
+        "total_excel": 12474100.0,
+        "diferencias_detalle": [
+          "Nombres: PDF='Colombiana de Comercio S.A.' vs Excel='COLOMBIANA DE COMERCIO SA Y/O ALKOSTO SA'"
         ]
       }
     ],
     "hallazgos_y_recomendaciones": {
-      "resumen_ejecutivo": "Se procesaron 29 facturas PDF y 55 registros Excel. Se encontraron 2 proveedores con coincidencias (14.3%), 4 con diferencias y 8 proveedores que aparecen en una sola fuente.",
+      "resumen_ejecutivo": "Se procesaron 29 facturas PDF y 55 registros Excel. Se encontraron 1 proveedores con coincidencias (7.1%), 5 con diferencias y 8 proveedores que aparecen en una sola fuente.",
       "principales_hallazgos": [
         "3 proveedores están en PDFs pero no en AP Listing",
         "5 proveedores están en AP Listing pero no en PDFs",
@@ -4014,7 +4106,7 @@
         "Spend Category": "Physical Security ID Badges",
         "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
         "Location": "COL Medellin -Proyecto FIC 48 18A-14",
-        "estado_conciliacion": "COINCIDEN"
+        "estado_conciliacion": "DIFIEREN"
       },
       {
         "source_file": "YCO01_IDENTICO SAS_FE910335.pdf",
@@ -4043,7 +4135,7 @@
         "Spend Category": "Physical Security ID Badges",
         "Cost Center": "(SITE) ADMINISTRATION / FACILITIES",
         "Location": "COL Bogota - Plaza Titan",
-        "estado_conciliacion": "COINCIDEN"
+        "estado_conciliacion": "DIFIEREN"
       },
       {
         "source_file": "YCO01_Moon Creativo LLC_INV32.pdf",

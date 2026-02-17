@@ -200,52 +200,29 @@ def load_excel(path):
     if date_cols:
         date_col = date_cols[0]
         df["invoice_date_normalized"] = df[date_col].apply(normalize_date)
-
-    # asegurar Invoice ID
-    invoice_cols = [c for c in df.columns if "INVOICE ID" in c.upper() or c.upper() == "INVOICE" or "INVOICE ID" in c.upper()]
-    invoice_col = invoice_cols[0] if invoice_cols else None
-    if invoice_col:
-        df[invoice_col] = df[invoice_col].astype(str).str.strip()
-    else:
-        # si no hay invoice id explícito, intentar varios candidatos
-        possible = [c for c in df.columns if "INVOICE" in c.upper() or "INVOICE ID" in c.upper() or "INVOICEID" in c.upper()]
-        invoice_col = possible[0] if possible else None
-
-    # convertir montos a numeric: buscamos columnas con SUBTOTAL / TOTAL / AMOUNT
-    numeric_candidates = [c for c in df.columns if any(k in c.upper() for k in ["SUBTOTAL", "TOTAL", "AMOUNT", "BASE / SUBTOTAL"])]
-    for col in numeric_candidates:
-        df[col] = df[col].apply(parse_number)
-
-    # filtrar filas válidas: nit y invoice (si existe)
-    df = df.dropna(how="all")
-    df = df[df["nit_normalized"].notna()]
-    if invoice_col:
-        df = df[df[invoice_col].notna()]
-
-    # 1. Asegurar que usamos 'Total a Pagar' como el monto principal de comparación
-    if 'Total a Pagar' in df.columns:
-        # Forzamos a que 'Amount Total' sea igual a 'Total a Pagar' 
-        # para que la conciliación no detecte diferencias por retenciones
-        df['Amount Total'] = df['Total a Pagar']
-
-    # 2. Convertir montos a numeric (Mantener los candidatos actuales)
-    numeric_candidates = [c for c in df.columns if any(k in c.upper() for k in ["SUBTOTAL", "TOTAL", "AMOUNT", "BASE / SUBTOTAL"])]
-    for col in numeric_candidates:
-        df[col] = df[col].apply(parse_number)
-
-    # 3. Filtrar filas válidas y limpieza final
-    df = df.dropna(how="all")
-    df = df[df["nit_normalized"].notna()]
     
-    # eliminar filas con NIT inválido
-    df = df[df["nit_normalized"].notna()]
+    # 1. Crear el ID de factura normalizado (si no existe)
+    if "invoice_id_normalized" not in df.columns and invoice_col:
+        df["invoice_id_normalized"] = df[invoice_col].apply(normalize_invoice_id)
 
-    # eliminar filas con invoice vacía
-    if "invoice_id_normalized" in df.columns:
-        df = df[df["invoice_id_normalized"].notna()]
+    # 2. Convertir TODAS las columnas de dinero a número una sola vez
+    amount_columns = ['Subtotal', 'VAT/WHT1', 'Amount Total', 'Total a Pagar', 'Base / Subtotal']
+    for col in amount_columns:
+        if col in df.columns:
+            df[col] = df[col].apply(parse_number)
 
+    # 3. ASIGNAR EL VALOR DE COMPARACIÓN (Aquí aseguras el 1.515.159)
+   # Forzamos únicamente la columna 'Total a Pagar'
+    if 'Total a Pagar' in df.columns:
+        # Aplicamos parse_number para asegurar el formato float64
+        df['total_excel'] = df['Total a Pagar'].apply(parse_number)
+
+    # 4. Limpieza final y retorno
+    # Eliminamos filas donde no haya NIT o Invoice ID para evitar basura en el cruce
+    df = df.dropna(subset=['nit_normalized', 'invoice_id_normalized'])
     df = df.reset_index(drop=True)
-    print(f"Total facturas Excel limpias: {len(df)}")
-
-
+    
+    # Verificación rápida en consola
+    print(f"DEBUG: Valor final en total_excel -> {df['total_excel'].iloc[0]}")
+    
     return df
