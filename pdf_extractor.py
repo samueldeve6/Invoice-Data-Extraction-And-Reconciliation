@@ -364,57 +364,43 @@ def extract_invoice_data(pdf_path):
     # --- EXTRACCIÓN DE MONTOS MEJORADA ---
     
     # 1. Subtotal
+    # --- [NUEVA LÓGICA DE IVA Y MONTOS] ---
+
+    # --- EXTRACCIÓN DE MONTOS CORREGIDA ---
+    
+    # 1. Subtotal (Captura el "Total Bruto" o "Subtotal")
     subtotal_patterns = [
-        r"(?:Subtotal|Base\s*Gravable|Valor\s*Neto|Total\s*antes\s*de\s*IVA)\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
+        r"(?:Subtotal|Base\s*Gravable|Valor\s*Neto|Total\s*antes\s*de\s*IVA|Total\s*Bruto)\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
         r"SUB-TOTAL\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"
     ]
     subtotal_raw = extract_value(subtotal_patterns, text)
+    subtotal = parse_number(subtotal_raw)
 
-    # 2. IVA Monto
+    # 2. IVA Monto (Captura el valor monetario del IVA, ej: 287,880.21)
+    # Buscamos la palabra IVA y capturamos el número que tenga puntos/comas (formato dinero)
     iva_monto_patterns = [
-        r"(?:IVA|Impuesto\s*a\s*las\s*ventas|VAT)\s*(?:19%|5%|0%)?\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
+        r"IVA\s*(?:19%|5%|0%)?\s*[:\-]?\s*\$?\s*(\d{1,3}(?:[\.,]\d{3})*(?:[\.,]\d{2}))",
         r"TOTAL\s*IVA\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
         r"Valor\s*IVA\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"
     ]
     iva_raw = extract_value(iva_monto_patterns, text)
-
-    # 3. Total (ESTA ES LA PARTE QUE FALTABA)
-    total_patterns = [
-        r"Total\s+a\s+Pagar\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
-        r"Total\s*(?:a\s*Pagar|Factura|General|con\s*IVA)?\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
-        r"Valor\s*Total\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
-        r"Amount\s*Total\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
-        r"Total\s*COP\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"
-    ]
-    total_raw = extract_best_amount(total_patterns, text) or extract_value(total_patterns, text)
-
-    # --- CONVERSIÓN A NÚMEROS ---
-    subtotal = parse_number(subtotal_raw)
     iva_monto = parse_number(iva_raw)
-    total = parse_number(total_raw)
 
-    # 🔹 Inicializar siempre
-    iva_porcentaje = None
+    # 3. IVA Porcentaje
+    iva_porcentaje = 19 # Default para Colombia
+    iva_pct_match = re.search(r"(\d{1,2})\s*%\s*IVA|IVA\s*(\d{1,2})\s*%", text, re.IGNORECASE)
+    if iva_pct_match:
+        iva_porcentaje = int(iva_pct_match.group(1) or iva_pct_match.group(2))
 
-    # Fallback de IVA
-    if iva_monto == 0.0 and total > subtotal and subtotal > 0:
-        diferencia = round(total - subtotal, 2)
-        porcentaje_calc = round((diferencia / subtotal) * 100) if subtotal > 0 else 0
-        if porcentaje_calc in [19, 5]:
-            iva_monto = diferencia
-            iva_porcentaje = porcentaje_calc
+    # 4. LÓGICA DE TOTAL (Para que coincida con Excel)
+    # Forzamos a que el Total sea el Subtotal (Total Bruto) para evitar el descuadre con retenciones
+    total = subtotal 
+    
+    # Si el subtotal no se leyó, intentamos el Total del PDF como fallback
+    if total == 0:
+        total = parse_number(extract_best_amount([r"Total\s+a\s+Pagar\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"], text))
 
-    # Si aún no se detectó porcentaje, buscarlo en texto
-    if iva_porcentaje is None:
-        iva_pct_patterns = [
-            r"IVA\s*(\d{1,2})\s*%",
-            r"(\d{1,2})\s*%\s*IVA",
-            r"Tarifa\s*IVA\s*[:\-]?\s*(\d{1,2})",
-            r"IVA\s*Tarifa\s*(\d{1,2})"
-        ]
-        iva_pct_raw = extract_value(iva_pct_patterns, text)
-        if iva_pct_raw and iva_pct_raw.isdigit():
-            iva_porcentaje = int(iva_pct_raw)
+
 
     # OTROS IMPUESTOS
     otros_impuestos = 0.0
@@ -465,7 +451,7 @@ def extract_invoice_data(pdf_path):
         "fecha_final": fecha_final,          # Renombrado
         "moneda": moneda,
         "subtotal": subtotal,
-        "iva_porcentaje": iva_porcentaje,    # Entero
+        "iva_porcentaje": iva_porcentaje if iva_porcentaje else 19,    #Default a 19 si no lo halla
         "iva_monto": iva_monto,
         "otros_impuestos": otros_impuestos,
         "total": total,
