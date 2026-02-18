@@ -97,22 +97,33 @@ def load_excel(path):
     df.columns = df.columns.astype(str).str.strip()
     
     # --- PROCESO DE EXTRACCIÓN MANUAL (SOLUCIÓN DEFINITIVA) ---
+    # --- LIMPIEZA SEGURA DE COLUMNAS NUMÉRICAS IMPORTANTES ---
+
+    df.columns = df.columns.str.strip()
+
+    col_subtotal = next((c for c in df.columns if c.upper() == "SUBTOTAL"), None)
+    col_amount_total = next((c for c in df.columns if "AMOUNT TOTAL" in c.upper()), None)
+    col_total_pagar = next((c for c in df.columns if "TOTAL A PAGAR" in c.upper()), None)
+    col_vat = next((c for c in df.columns if "VAT" in c.upper() and "TOTAL" not in c.upper()), None)
+
+    if col_subtotal:
+        df["subtotal_excel"] = df[col_subtotal].apply(parse_number)
+    else:
+        df["subtotal_excel"] = 0.0
+
+    if col_amount_total:
+        df["amount_total_excel"] = df[col_amount_total].apply(parse_number)
+    elif col_total_pagar:
+        df["amount_total_excel"] = df[col_total_pagar].apply(parse_number)
+    else:
+        df["amount_total_excel"] = 0.0
+
+    if col_vat:
+        df["vat_excel"] = df[col_vat].apply(parse_number)
+    else:
+        df["vat_excel"] = 0.0
+
     
-    def extract_correct_total(row):
-        # Lista de columnas donde suele estar el dinero
-        posibles_cols = [c for c in df.columns if any(k in c.upper() for k in ["PAGAR", "TOTAL", "SUBTOTAL"])]
-        
-        # Primero intentamos sacar el valor de "Total a Pagar"
-        for col in posibles_cols:
-            if "AMOUNT" in col.upper(): continue # Saltamos la de 1.8M
-            
-            val = row[col]
-            num = parse_number(val)
-            
-            # Si el número es el que buscamos (o cercano), ese es
-            if num > 0:
-                return num
-        return 0.0
 
     # 4. Aplicar normalizaciones básicas
     nit_cols = [c for c in df.columns if "NIT" in c.upper()]
@@ -127,9 +138,6 @@ def load_excel(path):
     
     if col_pagar:
         df['total_excel'] = df[col_pagar].apply(parse_number)
-    else:
-        # Si no la encuentra, usa la función de búsqueda fila por fila
-        df['total_excel'] = df.apply(extract_correct_total, axis=1)
 
     # 6. Limpieza final
     df = df.dropna(subset=['nit_normalized', 'invoice_id_normalized'])
