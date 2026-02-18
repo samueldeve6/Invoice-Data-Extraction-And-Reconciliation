@@ -111,6 +111,27 @@ def extract_value(patterns, text, first_only=True):
                 return m.group(0).strip()
     return None
 
+def clean_iva(iva_monto, iva_porcentaje, total):
+    """
+    Valida si el IVA capturado es coherente.
+    Si no hay porcentaje o el valor no tiene sentido, lo deja en 0.
+    """
+
+    # Si no hay porcentaje, no aceptamos IVA
+    if iva_porcentaje == 0 or iva_porcentaje is None:
+        return 0.0
+
+    # Si el IVA es mayor que el total, está mal
+    if iva_monto > total:
+        return 0.0
+
+    # Si el IVA es demasiado pequeño frente al total (ej: 25 sobre 26 millones)
+    if total > 0 and iva_monto < (total * 0.001):
+        return 0.0
+
+    return iva_monto
+
+
 
 def extract_best_amount(patterns, text):
     """Busca *todos* los montos que coincidan con los patrones y retorna el más probable.
@@ -209,10 +230,6 @@ def extract_digito_verificacion(nit_completo):
         return None  # no se puede determinar el DV
     else:
         return None
-
-
-
-
 
 
 # ---------- extracción ----------
@@ -385,21 +402,37 @@ def extract_invoice_data(pdf_path):
     
     # 1. Subtotal (Captura el "Total Bruto" o "Subtotal")
     subtotal_patterns = [
-        r"(?:Subtotal|Base\s*Gravable|Valor\s*Neto|Total\s*antes\s*de\s*IVA|Total\s*Bruto)\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
-        r"SUB-TOTAL\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)"
-    ]
+    r"(?:Subtotal|Base\s*Gravable|Valor\s*Neto|Total\s*antes\s*de\s*IVA|Total\s*Bruto)\s*[:\-]?\s*\$?\s*([\d\.,\(\)]+)",
+    r"Total\s*Bruto\s*\n\s*([\d\.,\(\)]+)",
+    r"Total\s*Bruto.*?([\d]{1,3}(?:[\.,]\d{3})*(?:[\.,]\d{2}))"
+]
     subtotal_raw = extract_value(subtotal_patterns, text)
     subtotal = parse_number(subtotal_raw)
 
+    # 2. IVA Monto (Captura el monto del IVA, no el porcentaje)
+
     iva_monto_patterns = [
-        r"IVA\s*(?:19%|5%|0%)?\s*[:\-]?\s*\$?\s*([\d\.,]{4,15})", # Captura números largos
-        r"TOTAL\s*IVA\s*[:\-]?\s*\$?\s*([\d\.,]+)",
-        r"Valor\s*IVA\s*[:\-]?\s*\$?\s*([\d\.,]+)"
+    r"IVA\s*(?:19%|5%|0%)\s*[:\-]?\s*\$?\s*([\d\.,]{4,15})",
+    r"TOTAL\s*IVA\s*[:\-]?\s*\$?\s*([\d\.,]{4,15})",
+    r"Valor\s*IVA\s*[:\-]?\s*\$?\s*([\d\.,]{4,15})"
     ]
+
 
     # IVA Monto - Mejora del patrón para no perder dígitos
     iva_raw = extract_value(iva_monto_patterns, text)
     iva_monto = parse_number(iva_raw)
+
+    if iva_monto == 0.0:
+        iva_match = re.search(
+            r"IVA\s*\d{1,2}%?.{0,200}?([\d]{1,3}(?:[\.,]\d{3})*(?:[\.,]\d{2})?)",
+            text,
+            re.IGNORECASE | re.DOTALL
+        )
+
+        if iva_match:
+            possible_amount = iva_match.group(1)
+            iva_monto = parse_number(possible_amount)
+
 
     # IVA Porcentaje
     iva_porcentaje = 19 # Default para Colombia
@@ -423,14 +456,35 @@ def extract_invoice_data(pdf_path):
     total_raw = extract_best_amount(total_patterns, text)
     total = parse_number(total_raw)
 
+    iva_monto = clean_iva(iva_monto, iva_porcentaje, total)
+
+
+    #Calculo subtotal si no se extrajo pero sí el total y el IVA
+    if subtotal == 0.0 and total > 0:
+        if iva_monto == 0.0:
+            subtotal = total
+        else:
+            subtotal = round(total - iva_monto, 2)
+    
+    
+    energia_match = re.search(
+    r"Total\s+Energ[ií]a\s*\$?\s*([\d\.,]+)",
+    text,
+    re.IGNORECASE
+    )
+
+    if energia_match:
+        energia_val = parse_number(energia_match.group(1))
+        if energia_val > 0:
+            subtotal = energia_val
+            total = energia_val
+            iva_monto = 0.0
+            iva_porcentaje = 0
+
     # --- VALIDACIÓN CRUCIAL PARA LA RÚBRICA ---
     # Si el total extraído no coincide con la suma, recalculamos o validamos
-    suma_calculada = subtotal + iva_monto + otros_impuestos
     
-    # Si el total extraído es 0 o está muy lejos de la suma, usamos la suma
-    if total == 0 or abs(total - suma_calculada) > 10:
-        # En el caso de Colombiana de Comercio, si subtotal + IVA = total, usamos eso
-        total = suma_calculada
+
         
     
 
@@ -449,14 +503,32 @@ def extract_invoice_data(pdf_path):
     moneda = moneda.upper().strip() if moneda else "COP"
 
     numero_lineas = None
+
     try:
         with pdfplumber.open(pdf_path) as pdf:
             if pdf.pages:
-                table = pdf.pages[0].extract_table()
-                if table:
-                    numero_lineas = max(0, len(table)-1)
-    except:
+                page = pdf.pages[0]
+
+                # 1️⃣ Intentar extraer tabla estructurada
+                table = page.extract_table()
+                if table and len(table) > 1:
+                    numero_lineas = max(0, len(table) - 1)
+
+                else:
+                    # 2️⃣ Fallback: contar líneas que parezcan ítems
+                    text = page.extract_text() or ""
+
+                    # Patrón típico de línea con valor monetario al final
+                    line_patterns = re.findall(
+                        r".+\s+[\d]{1,3}(?:[\.,]\d{3})*(?:[\.,]\d{2})",
+                        text
+                    )
+
+                    numero_lineas = len(line_patterns)
+
+    except Exception as e:
         numero_lineas = None
+
 
     nit_normalized = normalize_nit(nit)
     
