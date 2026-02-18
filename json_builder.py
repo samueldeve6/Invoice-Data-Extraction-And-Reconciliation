@@ -117,6 +117,7 @@ def build_json(df, output_path, errores, total_pdf, total_excel, resultados_conc
                 "total_proveedores": len(resultados_conciliacion),
                 "porcentaje_coincidencia": round((total_proveedores_match / len(resultados_conciliacion)) * 100, 2) if resultados_conciliacion else 0
             },
+            # Montos totales por proveedor
             "montos_totales": {
                 "total_pdf": round(total_monto_pdf, 2),
                 "total_excel": round(total_monto_excel, 2),

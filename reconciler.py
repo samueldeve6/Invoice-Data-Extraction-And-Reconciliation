@@ -104,25 +104,29 @@ def reconcile(pdf_df, excel_df):
             excel_facturas = set(excel_proveedor.get('Invoice ID', pd.Series(dtype=object)).dropna())
         facturas_comunes = pdf_facturas & excel_facturas
         
-        # Comparar montos totales
-        total_pdf = pdf_proveedor['total'].sum() if 'total' in pdf_proveedor.columns else 0
-        total_excel = excel_proveedor['Amount Total'].sum() if 'Amount Total' in excel_proveedor.columns else 0
-        
-        diferencia_abs = abs(total_pdf - total_excel)
-        diferencia_pct = (diferencia_abs / max(total_pdf, total_excel, 1)) * 100
-        
+        # Comparar montos subtotal
+        subtotal_pdf = pdf_proveedor['subtotal'].sum() if 'subtotal' in pdf_proveedor.columns else 0
+        subtotal_excel = excel_proveedor['Subtotal'].sum() if 'Subtotal' in excel_proveedor.columns else 0
+
+        diferencia_abs = abs(subtotal_pdf - subtotal_excel)
+        diferencia_pct = (diferencia_abs / max(subtotal_pdf, subtotal_excel, 1)) * 100
+
+        iva_pdf = pdf_proveedor['iva_monto'].sum() if 'iva_monto' in pdf_proveedor.columns else 0
+        iva_excel = excel_proveedor['VAT/WHT1'].sum() if 'VAT/WHT1' in excel_proveedor.columns else 0
+
+        iva_diff = abs(iva_pdf - iva_excel)
         # Clasificar coincidencia con criterios más flexibles
-        if nombre_coincide and (len(facturas_comunes) > 0 or diferencia_pct < 20):
-            if len(facturas_comunes) > 0 and diferencia_pct < 10:
-                estado = "COINCIDEN"
-            else:
-                estado = "DIFIEREN"
-        elif nombre_coincide or len(facturas_comunes) > 0:
-            estado = "DIFIEREN"
+        TOLERANCIA = 1  # 1 peso
+
+        if (
+            len(facturas_comunes) > 0
+            and abs(subtotal_pdf - subtotal_excel) <= TOLERANCIA
+        ):
+            estado = "COINCIDEN"
         else:
             estado = "DIFIEREN"
-        
-        # Detalles de diferencias
+
+                # Detalles de diferencias
         diferencias = []
         if not nombre_coincide:
             diferencias.append(f"Nombres: PDF='{pdf_proveedor['nombre_proveedor'].iloc[0]}' vs Excel='{excel_proveedor['Supplier/Beneficiary Name'].iloc[0]}'")
@@ -131,7 +135,7 @@ def reconcile(pdf_df, excel_df):
             diferencias.append(f"Sin facturas coincidentes: PDF={len(pdf_facturas)} vs Excel={len(excel_facturas)}")
         
         if diferencia_pct > 5:
-            diferencias.append(f"Montos: PDF=${total_pdf:,.2f} vs Excel=${total_excel:,.2f} (diferencia {diferencia_pct:.1f}%)")
+            diferencias.append(f"Montos: PDF=${subtotal_pdf:,.2f} vs Excel=${subtotal_excel:,.2f} (diferencia {diferencia_pct:.1f}%)")
         
         resultado = {
             "nit": nit,
@@ -141,8 +145,8 @@ def reconcile(pdf_df, excel_df):
             "facturas_pdf": len(pdf_facturas),
             "facturas_excel": len(excel_facturas),
             "facturas_comunes": len(facturas_comunes),
-            "total_pdf": total_pdf,
-            "total_excel": total_excel,
+            "total_pdf": subtotal_pdf,
+            "total_excel": subtotal_excel,
             "diferencia_absoluta": diferencia_abs,
             "diferencia_porcentual": diferencia_pct,
             "diferencias": diferencias,
@@ -164,8 +168,8 @@ def reconcile(pdf_df, excel_df):
             "facturas_pdf": len(pdf_proveedor),
             "facturas_excel": 0,
             "facturas_comunes": 0,
-            "total_pdf": pdf_proveedor['total'].sum() if 'total' in pdf_proveedor.columns else 0,
-            "total_excel": 0,
+            "subtotal_pdf": pdf_proveedor['subtotal'].sum() if 'subtotal' in pdf_proveedor.columns else 0,
+            "subtotal_excel": 0,
             "diferencia_absoluta": 0,
             "diferencia_porcentual": 0,
             "diferencias": ["Proveedor no encontrado en AP Listing"],
@@ -187,8 +191,8 @@ def reconcile(pdf_df, excel_df):
             "facturas_pdf": 0,
             "facturas_excel": len(excel_proveedor),
             "facturas_comunes": 0,
-            "total_pdf": 0,
-            "total_excel": excel_proveedor['Amount Total'].sum() if 'Amount Total' in excel_proveedor.columns else 0,
+            "subtotal_pdf": 0,
+            "subtotal_excel": excel_proveedor['Subtotal'].sum() if 'Subtotal' in excel_proveedor.columns else 0,
             "diferencia_absoluta": 0,
             "diferencia_porcentual": 0,
             "diferencias": ["Proveedor no encontrado en facturas PDF"],
