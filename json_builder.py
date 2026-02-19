@@ -74,7 +74,8 @@ def build_json(df, output_path, errores, total_pdf, total_excel, resultados_conc
     
     # 1. Cálculo de totales forzando valores numéricos únicos
     try:
-        total_monto_pdf = float(df_clean['total_pdf'].sum()) if 'total_pdf' in df_clean.columns else 0.0
+        # Cambia la forma en que calculas el total_monto_pdf por esta:
+        total_monto_pdf = round(df_clean['total_pdf'].sum(), 2)
     except:
         total_monto_pdf = 0.0
 

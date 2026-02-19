@@ -47,7 +47,7 @@ def reconcile(pdf_df, excel_df):
     # Normalizar montos a numérico
     for col in ['subtotal', 'iva_monto', 'total', 'otros_impuestos']:
         if col in pdf_df.columns:
-            pdf_df[col] = pd.to_numeric(pdf_df[col], errors='coerce').fillna(0)
+            pdf_df[col] = pd.to_numeric(pdf_df[col], errors='coerce').fillna(0).round(2)
     
     for col in ['Subtotal', 'VAT/WHT1', 'Amount Total']:
         if col in excel_df.columns:

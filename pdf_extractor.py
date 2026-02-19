@@ -450,13 +450,20 @@ def extract_invoice_data(pdf_path):
     # LÓGICA DE TOTAL (Para que coincida con Excel)
    # Primero intentamos extraer el total real del PDF
     total_patterns = [
+        # Este nuevo patrón busca específicamente el formato de la cabecera de EPM
+        r"Valor\s+total\s+a\s+pagar\s*\$?\s*([\d\.,]{5,20})", 
+        r"(?:\$)\s*([\d\.,]{5,20})\s+Valor\s+total\s+a\s+pagar",
         r"(?:Total\s*a\s*Pagar|Valor\s*Total|Total\s*Factura|TOTAL)\s*[:\-]?\s*\$?\s*([\d\.,]{5,20})",
         r"TOTAL\s*[\s\w]*\s*[:\-]?\s*\$?\s*([\d\.,]{5,20})"
     ]
+    
     total_raw = extract_best_amount(total_patterns, text)
     total = parse_number(total_raw)
 
     iva_monto = clean_iva(iva_monto, iva_porcentaje, total)
+
+
+    
 
 
     #Calculo subtotal si no se extrajo pero sí el total y el IVA
@@ -467,11 +474,7 @@ def extract_invoice_data(pdf_path):
             subtotal = round(total - iva_monto, 2)
     
     #Capturar Subtotal recibos Empresas De Medellin
-    energia_match = re.search(
-    r"Total\s+Energ[ií]a\s*\$?\s*([\d\.,]+)",
-    text,
-    re.IGNORECASE
-    )
+    energia_match = re.search(r"Total\s+Energ[ií]a\s*\$?\s*([\d\.,]+)", text, re.IGNORECASE)
 
     if energia_match:
         energia_val = parse_number(energia_match.group(1))
@@ -487,12 +490,33 @@ def extract_invoice_data(pdf_path):
         valor_otros = parse_number(match_esp.group(1))
         otros_impuestos = valor_otros
     
+    # 1. Capturar Acueducto y Alcantarillado
+    acueducto_val = parse_number(extract_value([
+        r"Total\s+Acueducto\s*\$?\s*([\d\.,]+)", 
+        r"Acueducto\s*\$?\s*([\d\.,]+)"
+    ], text))
+    
+    alcantarillado_val = parse_number(extract_value([
+        r"Total\s+Alcantarillado\s*\$?\s*([\d\.,]+)", 
+        r"Alcantarillado\s*\$?\s*([\d\.,]+)"
+    ], text))
+
+    ajuste_peso_raw = extract_value([r"Ajuste\s*al\s*Peso\s*\$?\s*([\d\.,]+)"], text)
+    ajuste_peso = parse_number(ajuste_peso_raw)
+
+    menos_valor_raw = extract_value([r"Menos\s+valor\s+aplicado\s*\$?\s*([\d\.,]+)"], text)
+    menos_valor = parse_number(menos_valor_raw)
+
+    energia_val = parse_number(energia_match.group(1)) if energia_match else 0.0
+    if energia_val > 0 or acueducto_val > 0:
+        total = energia_val + acueducto_val+ alcantarillado_val + otros_impuestos - menos_valor + ajuste_peso
+    
 
     # PO / CUFE / MONEDA / LINEAS
     orden_compra = extract_value([
     r"\b(PO-YCO\d{2}-\d{6,})\b"
     ], text)
-    cufe = extract_value([r"CUFE\s*[:\-]?\s*([a-f0-9]{10,})", r"CUFE\s*[:\-]?\s*([A-Z0-9]{10,})"], text)
+    cufe = extract_value([r"(?:CUDE:|CUFE\s*)[:\-]?\s*([a-f0-9]{10,})", r"CUFE\s*[:\-]?\s*([A-Z0-9]{10,})"], text)
     tipo_factura = "electrónica" if re.search(r"factura electrónica|electr[oó]nica", text, re.IGNORECASE) else None
     
     moneda = extract_value([
@@ -532,8 +556,11 @@ def extract_invoice_data(pdf_path):
 
     nit_normalized = normalize_nit(nit)
     
+    
     if total == 0.0 and not numero_factura and not nit:
         return None
+    
+    total = round(total, 2)
 
     # --- DICCIONARIO FINAL CON CAMPOS RENOMBRADOS ---
     return {
