@@ -466,7 +466,7 @@ def extract_invoice_data(pdf_path):
         else:
             subtotal = round(total - iva_monto, 2)
     
-    
+    #Capturar Subtotal recibos Empresas De Medellin
     energia_match = re.search(
     r"Total\s+Energ[ií]a\s*\$?\s*([\d\.,]+)",
     text,
@@ -480,12 +480,12 @@ def extract_invoice_data(pdf_path):
             total = energia_val
             iva_monto = 0.0
             iva_porcentaje = 0
-
-    # --- VALIDACIÓN CRUCIAL PARA LA RÚBRICA ---
-    # Si el total extraído no coincide con la suma, recalculamos o validamos
-    
-
-        
+    #Capturar otros impuestos específicos de facturas de servicios públicos (Ej. Empresas de Medellín)
+    match_esp = re.search(r'Otras\s+entidades\s*\$\s*([\d\.,]+)', text)
+    if match_esp:
+        # Usamos parse_number para mantener la consistencia con tu lógica de limpieza
+        valor_otros = parse_number(match_esp.group(1))
+        otros_impuestos = valor_otros
     
 
     # PO / CUFE / MONEDA / LINEAS
