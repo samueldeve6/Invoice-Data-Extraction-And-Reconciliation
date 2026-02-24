@@ -134,28 +134,20 @@ def clean_iva(iva_monto, iva_porcentaje, total):
 
 
 def extract_best_amount(patterns, text):
-    """Busca *todos* los montos que coincidan con los patrones y retorna el más probable.
-
-    En muchos PDFs aparecen múltiples 'Total' (ej. totales parciales, totales de líneas).
-    Para el campo total a pagar, normalmente el valor correcto es el monto más alto.
     """
-    candidates = []
+    Busca montos basados en patrones. 
+    En lugar de devolver el máximo, devolvemos el primero encontrado 
+    que sea un número válido, asumiendo jerarquía de patrones.
+    """
     for p in patterns:
-        try:
-            matches = re.findall(p, text, flags=re.IGNORECASE)
-        except re.error:
-            matches = []
-
-        for m in matches:
-            raw = m if isinstance(m, str) else (m[0] if m else None)
-            if not raw:
-                continue
+        match = re.search(p, text, re.IGNORECASE)
+        if match:
+            # Si el patrón tiene grupos, usamos el primero
+            raw = match.group(1) if match.groups() else match.group(0)
             val = parse_number(raw)
-            if val and val > 0:
-                candidates.append((val, raw))
-
-    if not candidates:
-        return None
+            if val > 0:
+                return raw
+    return None
 
     # Elegir el monto mayor como heurística principal
     candidates.sort(key=lambda x: x[0], reverse=True)
@@ -458,20 +450,20 @@ def extract_invoice_data(pdf_path):
     ]
     
     total_raw = extract_best_amount(total_patterns, text)
-    total = parse_number(total_raw)
+    total_extraido = parse_number(total_raw)
 
-    iva_monto = clean_iva(iva_monto, iva_porcentaje, total)
+    iva_monto = clean_iva(iva_monto, iva_porcentaje, total_extraido)
 
 
     
 
 
     #Calculo subtotal si no se extrajo pero sí el total y el IVA
-    if subtotal == 0.0 and total > 0:
+    if subtotal == 0.0 and total_extraido > 0:
         if iva_monto == 0.0:
-            subtotal = total
+            subtotal = total_extraido
         else:
-            subtotal = round(total - iva_monto, 2)
+            subtotal = round(total_extraido - iva_monto, 2)
     
     #Capturar Subtotal recibos Empresas De Medellin
     energia_match = re.search(r"Total\s+Energ[ií]a\s*\$?\s*([\d\.,]+)", text, re.IGNORECASE)
@@ -508,9 +500,19 @@ def extract_invoice_data(pdf_path):
     menos_valor = parse_number(menos_valor_raw)
 
     energia_val = parse_number(energia_match.group(1)) if energia_match else 0.0
-    if energia_val > 0 or acueducto_val > 0:
-        total = energia_val + acueducto_val+ alcantarillado_val + otros_impuestos - menos_valor + ajuste_peso
-    
+    if "Empresas de Medellín" in text or "EPM" in text:
+        # Si el regex extrajo el total grande (aprox 3.4M), lo dejamos quieto.
+        # Solo si el total_extraido es muy bajo o cero, intentamos sumar.
+        if total_extraido < 1000: # Heurística: un total de EPM no suele ser tan bajo
+            total_calculado = energia_val + acueducto_val + alcantarillado_val + otros_impuestos - menos_valor + ajuste_peso
+            total = total_calculado if total_calculado > 0 else total_extraido
+        else:
+            total = total_extraido
+    else:
+        total = total_extraido
+
+    # 3. Limpieza final de precisión
+    total = round(total, 2)
 
     # PO / CUFE / MONEDA / LINEAS
     orden_compra = extract_value([
@@ -559,8 +561,6 @@ def extract_invoice_data(pdf_path):
     
     if total == 0.0 and not numero_factura and not nit:
         return None
-    
-    total = round(total, 2)
 
     # --- DICCIONARIO FINAL CON CAMPOS RENOMBRADOS ---
     return {

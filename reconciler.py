@@ -104,15 +104,18 @@ def reconcile(pdf_df, excel_df):
             excel_facturas = set(excel_proveedor.get('Invoice ID', pd.Series(dtype=object)).dropna())
         facturas_comunes = pdf_facturas & excel_facturas
         
-        # Comparar montos subtotal
-        subtotal_pdf = pdf_proveedor['subtotal'].sum() if 'subtotal' in pdf_proveedor.columns else 0
-        subtotal_excel = excel_proveedor['Subtotal'].sum() if 'Subtotal' in excel_proveedor.columns else 0
+        # Comparar montos: calcular subtotal, IVA y total con redondeo consistente
+        subtotal_pdf = round(pdf_proveedor['subtotal'].sum() if 'subtotal' in pdf_proveedor.columns else 0, 2)
+        iva_pdf = round(pdf_proveedor['iva_monto'].sum() if 'iva_monto' in pdf_proveedor.columns else 0, 2)
+        # Preferimos la columna 'total' si está disponible, sino sumamos subtotal+iva
+        total_pdf_val = round(pdf_proveedor['total'].sum() if 'total' in pdf_proveedor.columns else (subtotal_pdf + iva_pdf), 2)
 
-        diferencia_abs = abs(subtotal_pdf - subtotal_excel)
-        diferencia_pct = (diferencia_abs / max(subtotal_pdf, subtotal_excel, 1)) * 100
+        subtotal_excel = round(excel_proveedor['Subtotal'].sum() if 'Subtotal' in excel_proveedor.columns else 0, 2)
+        iva_excel = round(excel_proveedor['VAT/WHT1'].sum() if 'VAT/WHT1' in excel_proveedor.columns else 0, 2)
+        total_excel_val = round(excel_proveedor['Amount Total'].sum() if 'Amount Total' in excel_proveedor.columns else (subtotal_excel + iva_excel), 2)
 
-        iva_pdf = pdf_proveedor['iva_monto'].sum() if 'iva_monto' in pdf_proveedor.columns else 0
-        iva_excel = excel_proveedor['VAT/WHT1'].sum() if 'VAT/WHT1' in excel_proveedor.columns else 0
+        diferencia_abs = round(abs(total_pdf_val - total_excel_val), 2)
+        diferencia_pct = round((diferencia_abs / max(total_pdf_val, total_excel_val, 1)) * 100, 2)
 
         # Clasificar coincidencia
         TOLERANCIA = 1  # 1 peso
@@ -137,8 +140,12 @@ def reconcile(pdf_df, excel_df):
             "facturas_pdf": len(pdf_facturas),
             "facturas_excel": len(excel_facturas),
             "facturas_comunes": len(facturas_comunes),
-            "total_pdf": subtotal_pdf,
-            "total_excel": subtotal_excel,
+            "subtotal_pdf": subtotal_pdf,
+            "iva_pdf": iva_pdf,
+            "total_pdf": total_pdf_val,
+            "subtotal_excel": subtotal_excel,
+            "iva_excel": iva_excel,
+            "total_excel": total_excel_val,
             "diferencia_absoluta": diferencia_abs,
             "diferencia_porcentual": diferencia_pct,
             "diferencias": diferencias,
@@ -150,6 +157,7 @@ def reconcile(pdf_df, excel_df):
     # --- PROVEEDORES SOLO EN PDF ---
     for nit in nits_solo_pdf:
         pdf_proveedor = pdf_df[pdf_df['nit_normalized'] == nit]
+        # PROVEEDOR SOLO EN PDF: incluir llaves `subtotal_pdf` y `total_pdf` de forma consistente
         resultado = {
             "nit": nit,
             "nombre_proveedor": pdf_proveedor['nombre_proveedor'].iloc[0],
@@ -158,7 +166,9 @@ def reconcile(pdf_df, excel_df):
             "facturas_pdf": len(pdf_proveedor),
             "facturas_excel": 0,
             "facturas_comunes": 0,
-            "subtotal_pdf": pdf_proveedor['subtotal'].sum(),
+            "subtotal_pdf": round(pdf_proveedor['subtotal'].sum() if 'subtotal' in pdf_proveedor.columns else 0, 2),
+            "iva_pdf": round(pdf_proveedor['iva_monto'].sum() if 'iva_monto' in pdf_proveedor.columns else 0, 2),
+            "total_pdf": round(pdf_proveedor['total'].sum() if 'total' in pdf_proveedor.columns else pdf_proveedor['subtotal'].sum(), 2),
             "subtotal_excel": 0,
             "diferencia_absoluta": 0,
             "diferencia_porcentual": 0,
@@ -171,6 +181,7 @@ def reconcile(pdf_df, excel_df):
     # --- PROVEEDORES SOLO EN EXCEL ---
     for nit in nits_solo_excel:
         excel_proveedor = excel_df[excel_df['nit_normalized'] == nit]
+        # PROVEEDOR SOLO EN EXCEL: incluir `total_excel` y `subtotal_excel` de forma consistente
         resultado = {
             "nit": nit,
             "nombre_proveedor": excel_proveedor['Supplier/Beneficiary Name'].iloc[0],
@@ -180,7 +191,11 @@ def reconcile(pdf_df, excel_df):
             "facturas_excel": len(excel_proveedor),
             "facturas_comunes": 0,
             "subtotal_pdf": 0,
-            "subtotal_excel": excel_proveedor['Subtotal'].sum(),
+            "iva_pdf": 0,
+            "total_pdf": 0,
+            "subtotal_excel": round(excel_proveedor['Subtotal'].sum() if 'Subtotal' in excel_proveedor.columns else 0, 2),
+            "iva_excel": round(excel_proveedor['VAT/WHT1'].sum() if 'VAT/WHT1' in excel_proveedor.columns else 0, 2),
+            "total_excel": round(excel_proveedor['Amount Total'].sum() if 'Amount Total' in excel_proveedor.columns else excel_proveedor['Subtotal'].sum(), 2),
             "diferencia_absoluta": 0,
             "diferencia_porcentual": 0,
             "diferencias": ["Proveedor no encontrado en facturas PDF"],

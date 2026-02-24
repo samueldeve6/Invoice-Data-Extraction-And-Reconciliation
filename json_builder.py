@@ -7,6 +7,7 @@ import math
 import numpy as np
 import pandas as pd
 
+
 def sanitize_for_json(obj):
     if isinstance(obj, float) and math.isnan(obj):
         return None
@@ -72,23 +73,26 @@ def build_json(df, output_path, errores, total_pdf, total_excel, resultados_conc
     total_solo_pdf = len([r for r in resultados_conciliacion if r['estado'] == 'SOLO_PDF'])
     total_solo_excel = len([r for r in resultados_conciliacion if r['estado'] == 'SOLO_EXCEL'])
     
-    # 1. Cálculo de totales forzando valores numéricos únicos
+    # 1. Cálculo de totales desde la lista de resultados_conciliacion (que ya está agrupada y limpia)
+    # Esto evita usar el DataFrame directo que es el que genera los decimales basura
     try:
-        # Cambia la forma en que calculas el total_monto_pdf por esta:
-        total_monto_pdf = round(df_clean['total_pdf'].sum(), 2)
+        raw_sum_pdf = sum(float(r.get('total_pdf', 0) or 0) for r in resultados_conciliacion)
+        total_monto_pdf = float(f"{raw_sum_pdf:.2f}") # <--- Esto quita el .139999
     except:
         total_monto_pdf = 0.0
 
     try:
-        total_monto_excel = float(df_clean[excel_total_col].sum()) if excel_total_col in df_clean.columns else 0.0
-    except:
+        total_monto_excel = sum(round(float(r.get('total_excel', 0) or 0), 2) for r in resultados_conciliacion)
+        total_monto_excel = round(total_monto_excel, 2)
+    except Exception as e:
+        print(f"Error sumando total_excel: {e}")
         total_monto_excel = 0.0
 
-    # 2. Cálculos de diferencias calculados antes del diccionario
-    diff_abs = abs(total_monto_pdf - total_monto_excel)
+    # 2. Cálculos de diferencias basados en los nuevos totales limpios
+    diff_abs = round(abs(total_monto_pdf - total_monto_excel), 2)
     denominador = max(total_monto_pdf, total_monto_excel, 1.0)
-    diff_porc = (diff_abs / denominador) * 100
-    
+    diff_porc = round((diff_abs / denominador) * 100, 2)
+
     # 3. Top 5 discrepancias
     discrepancias_ordenadas = sorted(
         [r for r in resultados_conciliacion if r['diferencia_porcentual'] > 0],
@@ -118,9 +122,9 @@ def build_json(df, output_path, errores, total_pdf, total_excel, resultados_conc
                 "total_proveedores": len(resultados_conciliacion),
                 "porcentaje_coincidencia": round((total_proveedores_match / len(resultados_conciliacion)) * 100, 2) if resultados_conciliacion else 0
             },
-            # Montos totales por proveedor
+            # Montos totales por proveedores
             "montos_totales": {
-                "total_pdf": round(total_monto_pdf, 2),
+                "total_pdf": total_monto_pdf, 
                 "total_excel": round(total_monto_excel, 2),
                 "diferencia_absoluta": round(abs(total_monto_pdf - total_monto_excel), 2),
                 "diferencia_porcentual": round((abs(total_monto_pdf - total_monto_excel) / max(total_monto_pdf, total_monto_excel, 1)) * 100, 2)
